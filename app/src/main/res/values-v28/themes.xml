@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MidnightChannel" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/crt_background</item>
+        <item name="android:colorBackground">@color/crt_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:textAppearance">@style/TextAppearance.MidnightChannel</item>
+        <item name="android:textColorPrimary">@color/crt_on_background</item>
+        <item name="android:textColorSecondary">@color/crt_accent_muted</item>
+        <item name="android:colorAccent">@color/crt_accent</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.MidnightChannel.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_mark</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.MidnightChannel</item>
+    </style>
+</resources>

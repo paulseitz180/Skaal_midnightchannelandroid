@@ -1,0 +1,226 @@
+# =============================================================================
+# Codemagic CI/CD — Midnight Channel (Android)
+# =============================================================================
+# Phase 1 distribution: direct APK / AAB sideload only.
+# Do NOT configure Google Play publishing in this file.
+#
+# Artifact retention: configured in the Codemagic UI (Application →
+# Artifacts / billing plan). YAML exports the paths below on each success.
+# =============================================================================
+
+workflows:
+
+  # ---------------------------------------------------------------------------
+  # CI — lint + debug APK (push / PR gate)
+  # ---------------------------------------------------------------------------
+  midnight-channel-ci:
+    name: Midnight Channel — CI (Debug APK)
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      java: 17
+      vars:
+        PACKAGE_NAME: com.skaalsolutions.midnightchannel
+        CM_BUILD_VARIANT: debug
+
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: '*'
+          include: true
+          source: true
+      cancel_previous_builds: true
+
+    cache:
+      cache_paths:
+        - $HOME/.gradle/caches
+        - $HOME/.gradle/wrapper
+
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+
+      - name: Report version & build identity
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          mkdir -p build/ci
+          VERSION_NAME=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -1)
+          VERSION_CODE=$(sed -n 's/.*versionCode = \([0-9][0-9]*\).*/\1/p' app/build.gradle.kts | head -1)
+          {
+            echo "app=Midnight Channel"
+            echo "package=$PACKAGE_NAME"
+            echo "versionName=${VERSION_NAME}-debug"
+            echo "versionCode=$VERSION_CODE"
+            echo "variant=debug"
+            echo "gitCommit=${CM_COMMIT:-unknown}"
+            echo "gitBranch=${CM_BRANCH:-unknown}"
+            echo "codemagicBuildId=${CM_BUILD_ID:-local}"
+            echo "codemagicBuildNumber=${BUILD_NUMBER:-0}"
+            echo "builtAtUtc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } | tee build/ci/version.txt
+
+      - name: Make Gradle executable
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          chmod +x gradlew
+
+      - name: Lint (debug)
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:lintDebug --stacktrace --build-cache
+
+      - name: Build debug APK
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:assembleDebug --stacktrace --build-cache
+          echo "Debug APK build complete."
+          find app/build/outputs -name '*.apk' -print
+
+    artifacts:
+      - build/ci/version.txt
+      - app/build/outputs/**/*.apk
+      - app/build/reports/lint-results-debug.html
+
+  # ---------------------------------------------------------------------------
+  # Release — debug APK + release APK + release AAB (Phase 1 sideload)
+  # Optional signing: Codemagic Code signing identities → android_signing refs,
+  # or inject CM_KEYSTORE_* via environment group. No Play Store upload.
+  # ---------------------------------------------------------------------------
+  midnight-channel-release:
+    name: Midnight Channel — Release (APK + AAB)
+    max_build_duration: 90
+    instance_type: linux_x2
+
+    environment:
+      java: 17
+      # When a keystore is registered in Codemagic, uncomment and set the reference:
+      # android_signing:
+      #   - midnightchannel_upload
+      # groups:
+      #   - midnightchannel_signing
+      vars:
+        PACKAGE_NAME: com.skaalsolutions.midnightchannel
+        CM_BUILD_VARIANT: release
+
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+      # Also allow manual / workflow dispatch from Codemagic UI for ad-hoc RC builds.
+      cancel_previous_builds: false
+
+    cache:
+      cache_paths:
+        - $HOME/.gradle/caches
+        - $HOME/.gradle/wrapper
+
+    scripts:
+      - name: Set Android SDK location
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+
+      - name: Report version & build identity
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          mkdir -p build/ci
+          VERSION_NAME=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -1)
+          VERSION_CODE=$(sed -n 's/.*versionCode = \([0-9][0-9]*\).*/\1/p' app/build.gradle.kts | head -1)
+          SIGNING_MODE="unsigned"
+          if [[ -n "${CM_KEYSTORE_PATH:-}" ]]; then
+            SIGNING_MODE="codemagic-keystore"
+          fi
+          {
+            echo "app=Midnight Channel"
+            echo "package=$PACKAGE_NAME"
+            echo "versionName=$VERSION_NAME"
+            echo "versionCode=$VERSION_CODE"
+            echo "variant=release"
+            echo "signing=$SIGNING_MODE"
+            echo "gitCommit=${CM_COMMIT:-unknown}"
+            echo "gitBranch=${CM_BRANCH:-unknown}"
+            echo "gitTag=${CM_TAG:-}"
+            echo "codemagicBuildId=${CM_BUILD_ID:-local}"
+            echo "codemagicBuildNumber=${BUILD_NUMBER:-0}"
+            echo "builtAtUtc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } | tee build/ci/version.txt
+
+      - name: Make Gradle executable
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          chmod +x gradlew
+
+      - name: Lint (release)
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:lintRelease --stacktrace --build-cache
+
+      - name: Build debug APK
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:assembleDebug --stacktrace --build-cache
+
+      - name: Build release APK
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:assembleRelease --stacktrace --build-cache
+          echo "Release APK build complete."
+          find app/build/outputs/apk -name '*.apk' -print
+
+      - name: Build release AAB
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:bundleRelease --stacktrace --build-cache
+          echo "Release AAB build complete."
+          find app/build/outputs/bundle -name '*.aab' -print
+
+      - name: Summarize artifacts
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          {
+            echo "=== Midnight Channel CI artifacts ==="
+            cat build/ci/version.txt
+            echo "---"
+            find app/build/outputs -type f \( -name '*.apk' -o -name '*.aab' -o -name 'mapping.txt' \) -print
+          } | tee build/ci/artifacts-summary.txt
+
+    artifacts:
+      - build/ci/version.txt
+      - build/ci/artifacts-summary.txt
+      - app/build/outputs/**/*.apk
+      - app/build/outputs/**/*.aab
+      - app/build/outputs/**/mapping.txt
+      - app/build/reports/lint-results-release.html
+
+# No `publishing.google_play` — Phase 1 is direct distribution only.

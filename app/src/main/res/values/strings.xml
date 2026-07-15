@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App identity -->
+    <string name="app_name">Midnight Channel</string>
+
+    <!-- Splash (native; copy per Screen Blueprints / Production Bible) -->
+    <string name="splash_wordmark">MIDNIGHT CHANNEL</string>
+    <string name="splash_caption">tuning in…</string>
+    <string name="splash_content_description">Midnight Channel. Tuning in.</string>
+    <string name="splash_status_announcement">Midnight Channel is tuning in</string>
+
+    <!-- Offline / Error -->
+    <string name="signal_lost_heading">SIGNAL LOST</string>
+    <string name="signal_lost_helper">Check your connection and try again.</string>
+    <string name="offline_screen_content_description">Signal lost. Check your connection and try again.</string>
+    <string name="retry">RETRY</string>
+    <string name="reconnecting">RECONNECTING…</string>
+    <string name="retry_content_description">Retry loading Midnight Channel</string>
+    <string name="retry_disabled_no_network">Retry unavailable. No network connection.</string>
+    <string name="retry_state_reconnecting">Reconnecting to Midnight Channel</string>
+
+    <!-- Exit confirmation (toast + TalkBack announcement) -->
+    <string name="press_back_again_to_exit">Press back again to exit</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Type scale used by window TextAppearance (Compose owns the live typography). -->
+    <dimen name="text_body">16sp</dimen>
+</resources>
