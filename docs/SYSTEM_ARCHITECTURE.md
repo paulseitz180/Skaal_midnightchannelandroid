@@ -52,7 +52,7 @@ There is **no** native data model, **no** authentication, and **no** backend own
 |-------|--------|
 | Language | Kotlin |
 | UI host | Jetpack Compose |
-| Web engine | Android `WebView` + `androidx.webkit` |
+| Web engine | Platform Android `WebView` (`android.webkit`) |
 | Min API | 26 |
 | Compile / target SDK | 36 |
 | Package | `com.skaalsolutions.midnightchannel` |
@@ -217,7 +217,8 @@ Connectivity: `ConnectivityMonitor` + `ConnectivityShellBridge` emit `NetworkLos
 | Secrets / API keys | None in the Android app |
 | Transport | HTTPS; `usesCleartextTraffic=false` + `network_security_config` |
 | File access from WebView | Disabled |
-| Safe Browsing | Enabled (settings + application meta-data) |
+| Safe Browsing | Enabled (settings + application meta-data); hits never `proceed` |
+| App backup | Disabled (`allowBackup=false` + data extraction rules) |
 | Multiple WebView windows | Disabled |
 | User agent spoofing | Forbidden |
 | External opens | Main-frame / approved schemes; validated + resolved before launch |

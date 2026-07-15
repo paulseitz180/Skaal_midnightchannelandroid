@@ -16,6 +16,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     // Signing priority:
@@ -65,7 +66,8 @@ android {
                 "proguard-rules.pro",
             )
             val releaseSigning = signingConfigs.getByName("release")
-            if (releaseSigning.storeFile != null && releaseSigning.storeFile!!.exists()) {
+            val storeFile = releaseSigning.storeFile
+            if (storeFile != null && storeFile.exists()) {
                 signingConfig = releaseSigning
             }
             // Without Codemagic/local keystore, release builds unsigned (CI still validates R8).
@@ -117,8 +119,15 @@ android {
         disable += setOf(
             "AndroidGradlePluginVersion",
             "GradleDependency",
-            "UnusedResources",
         )
+    }
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+            isIncludeAndroidResources = true
+        }
+        animationsDisabled = true
     }
 }
 
@@ -135,4 +144,22 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.animation)
+
+    // —— Unit tests (JVM) ——
+    testImplementation(libs.junit)
+    testImplementation(libs.google.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+
+    // —— Instrumentation + Compose UI tests ——
+    androidTestImplementation(composeBom)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.google.truth)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

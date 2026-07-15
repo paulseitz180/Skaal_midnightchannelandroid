@@ -52,7 +52,9 @@ class ConnectivityMonitor(
             network: Network,
             networkCapabilities: NetworkCapabilities,
         ) {
-            publish(statusFrom(networkCapabilities))
+            // Always re-probe the active network — capability callbacks can fire for
+            // non-default networks on multi-network devices.
+            publish(probeActiveNetwork())
         }
 
         override fun onUnavailable() {

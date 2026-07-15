@@ -13,6 +13,11 @@ import com.skaalsolutions.midnightchannel.navigation.ShellEvent
 fun shellRoutingWebViewCallbacks(
     emit: (ShellEvent) -> Unit,
     onExternalNavigation: (Uri) -> Unit = {},
+    /**
+     * Default: treat renderer death as a main-frame failure (Offline).
+     * Remounting a new WebView instance after claiming [WebViewClient.onRenderProcessGone]
+     * is a documented follow-up — do not also emit via [MidnightWebViewClientCallbacks.onMainFrameFailed].
+     */
     onRendererRecoveryRequired: (MainFrameFailure.RendererProcessGone) -> Unit = {
         emit(ShellEvent.MainFrameLoadFailed)
     },

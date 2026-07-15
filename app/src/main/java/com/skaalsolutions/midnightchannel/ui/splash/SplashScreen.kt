@@ -1,13 +1,10 @@
 package com.skaalsolutions.midnightchannel.ui.splash
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -39,15 +37,19 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.skaalsolutions.midnightchannel.R
-import com.skaalsolutions.midnightchannel.ui.a11y.announceForAccessibility
 import com.skaalsolutions.midnightchannel.ui.a11y.accessibleSecondary
+import com.skaalsolutions.midnightchannel.ui.a11y.announceForAccessibility
 import com.skaalsolutions.midnightchannel.ui.a11y.rememberShellAccessibilityState
+import com.skaalsolutions.midnightchannel.ui.testing.ShellUiTestTags
 import com.skaalsolutions.midnightchannel.ui.theme.MidnightTheme
+import com.skaalsolutions.midnightchannel.ui.theme.crtFieldBackground
 import kotlinx.coroutines.delay
 
 /**
  * Native CRT Splash Screen (Grande Document Screen Blueprint 1).
  *
+ * Visual language mirrors live midnightchannel.live: site body radial field,
+ * phosphor wordmark + glow, tap-prompt-style step blink (2s / 0.15 floor).
  * Accessibility: merged pane description, polite live region, TalkBack announce,
  * scalable type with scroll, reduce-motion disables phosphor flicker.
  */
@@ -79,16 +81,21 @@ fun SplashScreen(
         onElapsed.value()
     }
 
+    val blinkMs = motion.splashPhosphorBlinkMs.coerceAtLeast(2)
+    val blinkFloor = motion.splashPhosphorMinAlpha
     val flicker = rememberInfiniteTransition(label = "crtSplashFlicker")
     val animatedFlicker by flicker.animateFloat(
-        initialValue = SPLASH_FLICKER_MIN_ALPHA,
-        targetValue = 1f,
+        initialValue = 1f,
+        targetValue = blinkFloor,
         animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = motion.splashFlickerMs,
-                easing = FastOutSlowInEasing,
-            ),
-            repeatMode = RepeatMode.Reverse,
+            animation = keyframes {
+                durationMillis = blinkMs
+                // Match site `tap-prompt-blink`: hard hold, then step to low plate.
+                1f at 0
+                1f at blinkMs / 2 - 1
+                blinkFloor at blinkMs / 2
+                blinkFloor at blinkMs
+            },
         ),
         label = "crtSplashFlickerAlpha",
     )
@@ -98,7 +105,8 @@ fun SplashScreen(
         modifier = modifier
             .fillMaxSize()
             .alpha(contentAlpha.coerceIn(0f, 1f))
-            .background(colors.background)
+            .crtFieldBackground()
+            .testTag(ShellUiTestTags.SPLASH_ROOT)
             .semantics(mergeDescendants = true) {
                 contentDescription = accessibilityDescription
                 liveRegion = LiveRegionMode.Polite
@@ -128,7 +136,7 @@ fun SplashScreen(
             Text(
                 text = stringResource(R.string.splash_wordmark),
                 style = typography.wordmark,
-                color = colors.accent,
+                color = colors.phosphor,
                 textAlign = TextAlign.Center,
                 softWrap = true,
                 modifier = Modifier.semantics { heading() },
@@ -147,5 +155,3 @@ fun SplashScreen(
         }
     }
 }
-
-private const val SPLASH_FLICKER_MIN_ALPHA: Float = 0.55f

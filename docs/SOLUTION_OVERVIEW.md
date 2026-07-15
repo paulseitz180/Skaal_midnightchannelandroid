@@ -28,7 +28,7 @@ This assignment builds a **thin native Android shell** whose sole job is to deli
 | Attribute | Value |
 |-----------|-------|
 | Package name | `com.skaalsolutions.midnightchannel` |
-| Tech stack | Kotlin + Jetpack Compose host shell + Android `WebView` (`androidx.webkit`) |
+| Tech stack | Kotlin + Jetpack Compose host shell + Android `WebView` (platform `android.webkit`) |
 | Min API | 26 (Android 8.0) |
 | Compile / target SDK | 36 |
 | Version | `1.0.0` (versionCode `1`) |

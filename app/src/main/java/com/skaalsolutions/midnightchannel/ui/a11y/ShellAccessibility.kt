@@ -32,13 +32,16 @@ fun rememberShellAccessibilityState(): ShellAccessibilityState {
     }
 }
 
-/** Secondary body copy — full accent under high-text-contrast mode. */
+/** Secondary body copy — full phosphor under high-text-contrast mode. */
 fun CrtColorPalette.accessibleSecondary(a11y: ShellAccessibilityState): Color =
-    if (a11y.highTextContrastEnabled) accent else accentMuted
+    if (a11y.highTextContrastEnabled) phosphor else phosphorMuted
 
-/** Disabled / dim text — stay readable under high contrast. */
+/**
+ * Disabled / dim body copy in the phosphor family (not interactive `#00FF41` CTAs).
+ * Offline RETRY disabled/reconnecting states stay on the accent family intentionally.
+ */
 fun CrtColorPalette.accessibleDisabled(a11y: ShellAccessibilityState): Color =
-    if (a11y.highTextContrastEnabled) accentMuted else accentDim
+    if (a11y.highTextContrastEnabled) phosphorMuted else phosphorDim
 
 /**
  * Announce [message] for TalkBack. Prefer this alongside Toast for exit confirmation

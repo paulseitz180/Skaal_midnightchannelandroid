@@ -1,7 +1,7 @@
 # PROJECT STRUCTURE — Midnight Channel Android Application
 
 **Source of truth:** Grande Document v1.0 — Assignment Identity, Documents 5–6, Sections 08–09  
-**Implementation status:** Reflects the shipped repository after TASKS 01–26 (docs synced TASK 27)
+**Implementation status:** Reflects the shipped repository after TASKS 01–36 (structure/docs synced; engineering audit TASK 36)
 
 ---
 
@@ -21,10 +21,26 @@ Skaal_midnightchannelandroid/
 ├── app/
 │   ├── build.gradle.kts
 │   ├── proguard-rules.pro
-│   └── src/main/
-│       ├── AndroidManifest.xml
-│       ├── java/com/skaalsolutions/midnightchannel/
-│       └── res/
+│   └── src/
+│       ├── main/
+│       │   ├── AndroidManifest.xml
+│       │   ├── java/com/skaalsolutions/midnightchannel/
+│       │   └── res/
+│       ├── test/                      # JVM unit tests (JUnit / Robolectric)
+│       │   └── java/com/skaalsolutions/midnightchannel/
+│       │       ├── testing/           # Shared fixtures + conventions
+│       │       ├── navigation/
+│       │       ├── util/
+│       │       ├── webview/
+│       │       ├── connectivity/
+│       │       ├── recovery/
+│       │       ├── a11y/
+│       │       ├── theme/
+│       │       └── regression/        # Cross-TASK scenarios (TASK 35)
+│       └── androidTest/               # Instrumentation + Compose UI tests
+│           └── java/com/skaalsolutions/midnightchannel/
+│               ├── testing/           # Compose rules + UI tags
+│               └── ui/
 ├── gradle/
 │   └── libs.versions.toml
 ├── build.gradle.kts
@@ -54,12 +70,13 @@ Optional later: root `README.md` onboarding pointer to `/docs` (not required for
 com.skaalsolutions.midnightchannel/
 ├── MainActivity.kt                 # Single Activity; Compose setContent; lifecycle glue
 ├── ui/
-│   ├── theme/                      # CRT colors, typography, spacing, shapes, motion
+│   ├── theme/                      # CRT colors, typography, spacing, shapes, motion, field brush
 │   ├── shell/                      # MidnightShell + ShellBackHandler
 │   ├── splash/                     # SplashScreen
 │   ├── channel/                    # ChannelWebViewHost
 │   ├── offline/                    # OfflineErrorScreen
-│   └── a11y/                       # TalkBack / contrast / reduce-motion helpers
+│   ├── a11y/                       # TalkBack / contrast / reduce-motion helpers
+│   └── testing/                    # Shared Compose test tags (production)
 ├── webview/
 │   ├── ChannelDestination.kt       # HOST + HOME_URL
 │   ├── CrtShellChrome.kt           # Shared CRT hex for WebView surfaces
@@ -108,7 +125,7 @@ com.skaalsolutions.midnightchannel/
 ```
 app/src/main/res/
 ├── mipmap-anydpi/                 # Adaptive launcher icons
-├── drawable/                      # splash_background, splash_mark, launcher art
+├── drawable/                      # splash_mark, launcher art
 ├── values/
 │   ├── colors.xml                 # CRT tokens (#0A0A0A, #00FF41, phosphor, …)
 │   ├── strings.xml                # App label, splash, SIGNAL LOST, Retry, exit toast
@@ -116,7 +133,8 @@ app/src/main/res/
 │   ├── dimens.xml                 # Window TextAppearance body size
 │   └── typography.xml             # Window TextAppearance.MidnightChannel
 └── xml/
-    └── network_security_config.xml  # Cleartext disabled
+    ├── network_security_config.xml  # Cleartext disabled
+    └── data_extraction_rules.xml    # No cloud / device-transfer backup of WebView data
 ```
 
 Compose owns the live spacing / motion / type scale (`ui/theme`). XML retains window/splash/launcher needs only.

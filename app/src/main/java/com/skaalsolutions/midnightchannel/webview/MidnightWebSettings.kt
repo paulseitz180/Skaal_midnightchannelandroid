@@ -63,6 +63,16 @@ object MidnightWebSettings {
         // access; keeping this false reduces the attack surface of the WebView.
         settings.allowFileAccess = false
 
+        // Content-provider URIs DISABLED — no app content:// bridge into the WebView.
+        settings.allowContentAccess = false
+
+        // File-URL cross-origin DISABLED (API still present; defaults are false on
+        // modern platforms — set explicitly so a OEM default cannot reopen the hole).
+        @Suppress("DEPRECATION")
+        settings.allowFileAccessFromFileURLs = false
+        @Suppress("DEPRECATION")
+        settings.allowUniversalAccessFromFileURLs = false
+
         // Safe Browsing ENABLED — standard hygiene for WebView navigations. The
         // destination is trusted, but leaving Safe Browsing on costs nothing and
         // matches Grande Document Section 08 / application meta-data opt-in.

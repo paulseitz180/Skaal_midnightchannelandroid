@@ -119,8 +119,8 @@ object ExternalLinkNavigator {
         }
 
     /**
-     * Chrome-like Intent URL parsing: allow VIEW/SENDTO/DIAL; never CALL;
-     * always clear explicit component / selector so the platform resolves safely.
+     * Chrome-like Intent URL parsing: allow VIEW/SENDTO/DIAL; never CALL / install /
+     * privileged package actions; always clear package / component / selector / clip data.
      */
     private fun parseIntentUri(uri: Uri): Intent? =
         runCatching {
@@ -130,8 +130,10 @@ object ExternalLinkNavigator {
                 action.isNullOrBlank() -> parsed.action = Intent.ACTION_VIEW
                 action == Intent.ACTION_CALL ||
                     action == Intent.ACTION_CALL_BUTTON ||
-                    action == "android.intent.action.CALL_PRIVILEGED" -> {
-                    logDebug("Rejected privileged call action in intent: URI")
+                    action == "android.intent.action.CALL_PRIVILEGED" ||
+                    action == "android.intent.action.INSTALL_PACKAGE" ||
+                    action == "android.intent.action.UNINSTALL_PACKAGE" -> {
+                    logDebug("Rejected privileged action in intent: URI ($action)")
                     return null
                 }
             }
@@ -141,9 +143,11 @@ object ExternalLinkNavigator {
     private fun sanitizeIntent(intent: Intent): Intent =
         intent.apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
-            // Never honor a forced component from a web-sourced Intent URL.
+            // Never honor a forced component / package / selector from a web-sourced URI.
             component = null
             selector = null
+            setPackage(null)
+            clipData = null
             // Drop URI permission grants from untrusted sources.
             flags = flags and (
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or

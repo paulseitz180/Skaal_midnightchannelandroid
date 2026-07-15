@@ -1,7 +1,6 @@
 package com.skaalsolutions.midnightchannel.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +15,7 @@ import androidx.core.view.WindowCompat
 
 /**
  * CRT dark colour scheme — always-on; Midnight Channel has no light theme.
- * Accent is drawn as text/phosphor, not as filled Material primary surfaces.
+ * Phosphor / accent are drawn as text, not filled Material primary surfaces.
  */
 private val MidnightColorScheme = darkColorScheme(
     primary = CrtColors.Accent,
@@ -26,7 +25,7 @@ private val MidnightColorScheme = darkColorScheme(
     secondary = CrtColors.Phosphor,
     onSecondary = CrtColors.Background,
     secondaryContainer = CrtColors.Background,
-    onSecondaryContainer = CrtColors.AccentMuted,
+    onSecondaryContainer = CrtColors.PhosphorMuted,
     tertiary = CrtColors.AccentMuted,
     onTertiary = CrtColors.Background,
     background = CrtColors.Background,
@@ -34,10 +33,10 @@ private val MidnightColorScheme = darkColorScheme(
     surface = CrtColors.Background,
     onSurface = CrtColors.OnBackground,
     surfaceVariant = CrtColors.Black,
-    onSurfaceVariant = CrtColors.AccentMuted,
+    onSurfaceVariant = CrtColors.PhosphorMuted,
     error = CrtColors.Accent,
     onError = CrtColors.Background,
-    outline = CrtColors.AccentDim,
+    outline = CrtColors.PhosphorDim,
     outlineVariant = CrtColors.AccentDim,
     scrim = CrtColors.Scrim,
 )
@@ -45,28 +44,22 @@ private val MidnightColorScheme = darkColorScheme(
 /**
  * Root Compose theme for every native screen (Splash, Channel host, Offline/Error).
  *
- * Applies CRT palette / monospace type / hard shapes, paints a full-bleed CRT
- * background to prevent white flash, and configures immersive system bars
- * (dark icons off — phosphor-on-black field).
+ * Applies CRT palette / monospace type / hard shapes, paints a **single** full-bleed
+ * CRT field (children must not re-paint the same radial — avoids stacked drawWithCache
+ * cost under Splash flicker), and configures immersive system bars.
  */
 @Composable
 fun MidnightChannelTheme(
     content: @Composable () -> Unit,
 ) {
-    val colors = remember { CrtColorPalette() }
-    val typography = remember { CrtTextStyles }
-    val spacing = remember { CrtSpacing() }
-    val shapes = remember { CrtShapes() }
-    val motion = remember { CrtMotion() }
-
     ConfigureCrtSystemBars()
 
     CompositionLocalProvider(
-        LocalCrtColors provides colors,
-        LocalCrtTypography provides typography,
-        LocalCrtSpacing provides spacing,
-        LocalCrtShapes provides shapes,
-        LocalCrtMotion provides motion,
+        LocalCrtColors provides DefaultCrtColors,
+        LocalCrtTypography provides CrtTextStyles,
+        LocalCrtSpacing provides DefaultCrtSpacing,
+        LocalCrtShapes provides DefaultCrtShapes,
+        LocalCrtMotion provides DefaultCrtMotion,
     ) {
         MaterialTheme(
             colorScheme = MidnightColorScheme,
@@ -76,13 +69,19 @@ fun MidnightChannelTheme(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(colors.background),
+                    .crtFieldBackground(),
             ) {
                 content()
             }
         }
     }
 }
+
+/** Theme-scoped token singletons — avoid per-composition `remember { }` allocations. */
+private val DefaultCrtColors = CrtColorPalette()
+private val DefaultCrtSpacing = CrtSpacing()
+private val DefaultCrtShapes = CrtShapes()
+private val DefaultCrtMotion = CrtMotion()
 
 /**
  * Edge-to-edge immersive chrome for Splash, Channel host, and Offline/Error.

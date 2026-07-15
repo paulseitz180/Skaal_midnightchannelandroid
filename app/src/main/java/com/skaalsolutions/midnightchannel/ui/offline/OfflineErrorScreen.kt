@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -41,6 +40,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -54,11 +54,12 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.skaalsolutions.midnightchannel.R
-import com.skaalsolutions.midnightchannel.ui.a11y.accessibleDisabled
 import com.skaalsolutions.midnightchannel.ui.a11y.accessibleSecondary
 import com.skaalsolutions.midnightchannel.ui.a11y.announceForAccessibility
 import com.skaalsolutions.midnightchannel.ui.a11y.rememberShellAccessibilityState
+import com.skaalsolutions.midnightchannel.ui.testing.ShellUiTestTags
 import com.skaalsolutions.midnightchannel.ui.theme.MidnightTheme
+import com.skaalsolutions.midnightchannel.ui.theme.crtFieldBackground
 
 /**
  * Native Offline / Error Screen (Grande Document Screen Blueprint 3).
@@ -94,7 +95,8 @@ fun OfflineErrorScreen(
         modifier = modifier
             .fillMaxSize()
             .alpha(contentAlpha.coerceIn(0f, 1f))
-            .background(colors.background)
+            .crtFieldBackground()
+            .testTag(ShellUiTestTags.OFFLINE_ROOT)
             .semantics {
                 contentDescription = screenDescription
                 liveRegion = LiveRegionMode.Assertive
@@ -120,7 +122,7 @@ fun OfflineErrorScreen(
                 Text(
                     text = stringResource(R.string.signal_lost_heading),
                     style = typography.display,
-                    color = colors.accent,
+                    color = colors.phosphor,
                     textAlign = TextAlign.Center,
                     softWrap = true,
                     modifier = Modifier
@@ -186,9 +188,12 @@ private fun RetryControl(
         !retryEnabled -> disabledDescription
         else -> null
     }
+    // RETRY follows site interactive `#00FF41`; keep reconnecting/disabled in that family.
     val labelColor = when {
-        isReconnecting -> colors.accessibleSecondary(a11y)
-        !retryEnabled -> colors.accessibleDisabled(a11y)
+        isReconnecting ->
+            if (a11y.highTextContrastEnabled) colors.accent else colors.accentMuted
+        !retryEnabled ->
+            if (a11y.highTextContrastEnabled) colors.accentMuted else colors.accentDim
         else -> colors.accent
     }
 
@@ -216,6 +221,7 @@ private fun RetryControl(
                 role = Role.Button,
                 onClick = onRetryClick,
             )
+            .testTag(ShellUiTestTags.OFFLINE_RETRY)
             .semantics(mergeDescendants = true) {
                 role = Role.Button
                 contentDescription = semanticsDescription

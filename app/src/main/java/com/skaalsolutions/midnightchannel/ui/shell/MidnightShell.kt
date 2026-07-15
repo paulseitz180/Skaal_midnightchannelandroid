@@ -6,7 +6,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import com.skaalsolutions.midnightchannel.ui.channel.ChannelWebViewHost
 import com.skaalsolutions.midnightchannel.ui.offline.OfflineErrorScreen
 import com.skaalsolutions.midnightchannel.ui.splash.SplashScreen
 import com.skaalsolutions.midnightchannel.ui.theme.MidnightTheme
+import com.skaalsolutions.midnightchannel.ui.theme.crtFieldBackground
 import com.skaalsolutions.midnightchannel.util.WebViewHistoryBackHandler
 import com.skaalsolutions.midnightchannel.webview.ChannelDestination
 import com.skaalsolutions.midnightchannel.webview.shellRoutingWebViewCallbacks
@@ -53,7 +53,6 @@ fun MidnightShell(
     modifier: Modifier = Modifier,
     onSplashFloorElapsed: () -> Unit = {},
 ) {
-    val colors = MidnightTheme.colors
     val motion = MidnightTheme.motion
     val connectivityMonitor = LocalConnectivityMonitor.current
     val recovery = shell.recovery
@@ -129,7 +128,7 @@ fun MidnightShell(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.background),
+            .crtFieldBackground(),
     ) {
         ChannelWebViewHost(
             modifier = Modifier.fillMaxSize(),

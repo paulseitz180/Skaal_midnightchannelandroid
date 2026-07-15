@@ -81,6 +81,13 @@ workflows:
           cd "$CM_BUILD_DIR"
           ./gradlew :app:lintDebug --stacktrace --build-cache
 
+      - name: Unit tests (JVM)
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:testDebugUnitTest --stacktrace --build-cache
+
       - name: Build debug APK
         script: |
           #!/usr/bin/env bash
@@ -94,6 +101,7 @@ workflows:
       - build/ci/version.txt
       - app/build/outputs/**/*.apk
       - app/build/reports/lint-results-debug.html
+      - app/build/reports/tests/testDebugUnitTest/**
 
   # ---------------------------------------------------------------------------
   # Release — debug APK + release APK + release AAB (Phase 1 sideload)

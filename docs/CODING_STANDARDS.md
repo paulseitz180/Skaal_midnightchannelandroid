@@ -27,7 +27,7 @@
 | Min API | 26 |
 | Compile / target SDK | 36 |
 | Gradle | Kotlin DSL + version catalog |
-| Dependency restraint | Compose UI, AndroidX WebKit, lifecycle/activity — no unused SDK sprawl |
+| Dependency restraint | Compose UI, platform `android.webkit`, lifecycle/activity — no unused SDK sprawl |
 
 ### Naming
 
@@ -116,7 +116,7 @@ Still write code that is *testable* where cheap:
 - Pure helpers (`MidnightOriginPolicy`, `DoubleBackExitGate`, `ShellReducer`) should be unit-testable without WebView.
 - Do not block TASK completion on full Emulator suites unless Orchestrator requests it.
 
-See `QA_STRATEGY.md` for formal test and CI expectations. JVM unit tests for origin / double-back / reducer remain **recommended debt**.
+See `QA_STRATEGY.md` for formal test and CI expectations. JVM unit suites for origin / double-back / reducer / WebView / regression ship under `app/src/test` and run on CI (`:app:testDebugUnitTest`).
 
 ---
 

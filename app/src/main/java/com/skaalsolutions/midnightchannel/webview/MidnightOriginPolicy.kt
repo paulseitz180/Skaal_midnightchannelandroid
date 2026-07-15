@@ -45,7 +45,19 @@ object MidnightOriginPolicy {
     fun isShellInternalDocument(uri: Uri?): Boolean {
         if (uri == null) return false
         val scheme = uri.scheme?.lowercase() ?: return false
-        return scheme == "about" || scheme == "data"
+        return when (scheme) {
+            // CRT blank / dispose path — do not accept about:config or other about: pages.
+            "about" -> {
+                val ssp = uri.schemeSpecificPart?.lowercase().orEmpty()
+                ssp.isEmpty() || ssp == "blank"
+            }
+            // Error-suppression documents only — reject data:image/*, data:text/javascript, etc.
+            "data" -> {
+                val ssp = uri.schemeSpecificPart?.lowercase().orEmpty()
+                ssp.startsWith("text/html") || ssp.startsWith("text/plain")
+            }
+            else -> false
+        }
     }
 
     /**

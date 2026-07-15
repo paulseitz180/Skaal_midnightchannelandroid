@@ -3,13 +3,16 @@ package com.skaalsolutions.midnightchannel.webview
 import android.graphics.Bitmap
 import android.net.Uri
 import android.net.http.SslError
+import android.os.Build
 import android.webkit.RenderProcessGoneDetail
+import android.webkit.SafeBrowsingResponse
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 
 /**
@@ -136,6 +139,27 @@ class MidnightWebViewClient(
         callbacks.onMainFrameFailed(MainFrameFailure.Ssl.from(error))
     }
 
+    // —— Safe Browsing (API 27+) — never proceedPast; leave unsafe page ——
+
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
+    override fun onSafeBrowsingHit(
+        view: WebView,
+        request: WebResourceRequest,
+        threatType: Int,
+        callback: SafeBrowsingResponse,
+    ) {
+        callback.backToSafety(/* report = */ true)
+        if (!request.isForMainFrame) return
+        suppressDefaultErrorPage(view)
+        callbacks.onMainFrameFailed(
+            MainFrameFailure.Network(
+                errorCode = threatType,
+                description = "SafeBrowsing threatType=$threatType",
+                failingUrl = request.url?.toString(),
+            ),
+        )
+    }
+
     private fun isLikelyMainFrameSslFailure(view: WebView, error: SslError): Boolean {
         val failing = error.url?.takeIf { it.isNotBlank() } ?: return true
         val top = view.url?.takeIf { it.isNotBlank() } ?: return true
@@ -147,10 +171,12 @@ class MidnightWebViewClient(
     // —— Renderer process failures + recovery routing ——
 
     override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
+        // Claim ownership (return true) and route Offline via recovery hook once.
+        // Full WebView remount after renderer death remains known MVP debt.
         suppressDefaultErrorPage(view)
-        val failure = MainFrameFailure.RendererProcessGone(didCrash = detail.didCrash())
-        callbacks.onMainFrameFailed(failure)
-        callbacks.onRendererRecoveryRequired(failure)
+        callbacks.onRendererRecoveryRequired(
+            MainFrameFailure.RendererProcessGone(didCrash = detail.didCrash()),
+        )
         return true
     }
 

@@ -19,7 +19,7 @@
 | Version | `1.0.0` / versionCode `1` |
 | Language | Kotlin |
 | UI | Jetpack Compose host + WebView content surface |
-| WebView library | `androidx.webkit` |
+| WebView library | Platform `android.webkit` (WebView / WebSettings / clients) |
 
 ---
 
@@ -45,6 +45,7 @@
 - `android:configChanges` absorbs orientation, screenSize, screenLayout, smallestScreenSize, keyboard, keyboardHidden, uiMode — WebView is not recreated on those changes.
 - Orientation **lock** remains an open Grande Document §11 decision; shipped behavior is rotation-tolerant via `configChanges`.
 - `android:usesCleartextTraffic="false"` + `network_security_config`.
+- `android:allowBackup="false"` + `data_extraction_rules` — WebView storage must not leave the device via backup.
 - Package visibility `<queries>` for https/http/mailto/tel/sms/market/intent handoff.
 - WebView Safe Browsing application meta-data enabled.
 
@@ -72,7 +73,15 @@ Implement exactly in `MidnightWebSettings.apply`:
 | `safeBrowsingEnabled` | `true` | Standard hygiene |
 | User agent | Default WebView UA — **not overridden** | Site must treat app as standard mobile browser |
 
-**Deviation from this table is a defect**, not an optimization.
+**Security hardening (compatible with the table; do not reverse):**
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| `allowContentAccess` | `false` | No `content://` bridge into WebView |
+| `allowFileAccessFromFileURLs` | `false` | Block file-URL XSS patterns |
+| `allowUniversalAccessFromFileURLs` | `false` | Block cross-origin file-URL access |
+
+**Deviation from the normative table is a defect**, not an optimization.
 
 ---
 
@@ -83,7 +92,8 @@ Implement exactly in `MidnightWebSettings.apply`:
 | URL class | Behavior |
 |-----------|----------|
 | HTTPS same origin: `midnightchannel.live` (+ subdomains) | Load inside WebView |
-| Shell documents `about:` / `data:` | Load inside WebView (CRT blank / suppression) |
+| Shell documents `about:blank` / `data:text/html` (or `text/plain`) | Load inside WebView (CRT blank / suppression) |
+| Other `about:` / `data:` / `javascript:` | **Block** — not treated as shell documents |
 | Main-frame other approved schemes | Block in-WebView load; `ExternalLinkNavigator` Intent |
 | Subframe non-origin | Block in-WebView load; **do not** launch Intent |
 
@@ -98,7 +108,8 @@ HTTP to the product host is **not** treated as same-origin.
 ### 4.3 WebChromeClient
 
 - Title / progress callbacks available; splash paint gate uses `MainFrameLoadFinished`.
-- No geolocation / camera / microphone permission overrides.
+- Geolocation prompts and `PermissionRequest` are **denied** (no Manifest location/camera/mic).
+- Safe Browsing hits (API 27+): `backToSafety(true)` — never `proceed`.
 
 ---
 

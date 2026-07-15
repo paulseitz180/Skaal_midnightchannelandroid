@@ -2,6 +2,8 @@ package com.skaalsolutions.midnightchannel.webview
 
 import android.util.Log
 import android.webkit.ConsoleMessage
+import android.webkit.GeolocationPermissions
+import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import com.skaalsolutions.midnightchannel.BuildConfig
@@ -14,16 +16,12 @@ import com.skaalsolutions.midnightchannel.BuildConfig
  * - Document title (`onReceivedTitle`)
  * - Console logging in **debug builds only** (`onConsoleMessage`)
  *
- * Explicitly **not** overridden (defaults stand; unsupported in MVP):
- * - File chooser / file picker
- * - Camera / microphone permission prompts
+ * Explicitly denied (no permission UX; Manifest declares none):
  * - Geolocation prompts
- * - Generic permission requests
- * - JavaScript alert / confirm / prompt dialogs
+ * - Generic WebRTC / media permission requests
+ * - File chooser is not overridden (defaults cannot grant storage without Manifest permission)
  *
- * Future extensibility: add optional hooks to [MidnightWebChromeClientCallbacks]
- * and override the matching method only when a later TASK requires it — do not
- * pre-enable unsupported surfaces here.
+ * JavaScript alert / confirm / prompt remain platform defaults (site does not rely on them).
  */
 class MidnightWebChromeClient(
     callbacks: MidnightWebChromeClientCallbacks = MidnightWebChromeClientCallbacks(),
@@ -52,6 +50,19 @@ class MidnightWebChromeClient(
             "${consoleMessage.sourceId()}:${consoleMessage.lineNumber()} ${consoleMessage.message()}",
         )
         return true
+    }
+
+    override fun onGeolocationPermissionsShowPrompt(
+        origin: String?,
+        callback: GeolocationPermissions.Callback?,
+    ) {
+        // Product geo is IP/timezone-based in site JS — never grant device geolocation.
+        callback?.invoke(origin, /* allow = */ false, /* retain = */ false)
+    }
+
+    override fun onPermissionRequest(request: PermissionRequest?) {
+        // Camera / microphone / MIDI etc. — deny; Manifest has no matching permissions.
+        request?.deny()
     }
 
     private companion object {

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Confirmed: site meta theme-color / Production Bible primary. -->
+    <!-- Site meta theme-color / window + WebView blank field. -->
     <color name="crt_background">#FF0A0A0A</color>
-    <!-- Confirmed from site (v1.2 spec green / #00FF41). -->
+    <!-- Site interactive / tap-prompt green (v1.2). -->
     <color name="crt_accent">#FF00FF41</color>
-    <!-- Site CRT glow treatments use #0F0; keep as secondary phosphor. -->
+    <!-- Site body / OG wordmark phosphor (`color: #0f0`). -->
     <color name="crt_phosphor">#FF00FF00</color>
     <color name="crt_accent_muted">#9900FF41</color>
-    <color name="crt_accent_dim">#4D00FF41</color>
-    <color name="crt_on_background">#FF00FF41</color>
+    <color name="crt_phosphor_dim">#4D00FF00</color>
+    <!-- Default on-field text follows site body phosphor. -->
+    <color name="crt_on_background">@color/crt_phosphor</color>
 
     <color name="ic_launcher_background">@color/crt_background</color>
     <color name="splash_background">@color/crt_background</color>

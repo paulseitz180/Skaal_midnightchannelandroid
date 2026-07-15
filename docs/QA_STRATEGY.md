@@ -58,15 +58,44 @@ This app is a **WebView shell**. Most product behavior is owned by midnightchann
 | Release minify | Codemagic release workflow / `:app:assembleRelease` |
 | WebSettings constant review | Human review vs `ENGINEERING_SPECIFICATION.md` |
 
-### 3.2 Unit (JVM) — recommended minimal set (debt)
+### 3.2 Unit (JVM)
 
-Target pure logic without WebView:
+**Framework:** JUnit 4 + Truth + coroutines-test + Robolectric (for Android types such as `Uri`).  
+**Location:** `app/src/test/java/com/skaalsolutions/midnightchannel/`  
+**CI:** `:app:testDebugUnitTest` on Codemagic `midnight-channel-ci`.
+
+Target pure logic without a live WebView:
 
 - Same-origin vs external URL classification (`MidnightOriginPolicy`)
 - Double-back press window (~2s) (`DoubleBackExitGate`)
 - Shell state transitions (`ShellReducer`: Splash → Ready → Offline → Retrying)
 
-These tests support regression safety; they do **not** replace device QA. **Not yet present** in the repo — track as remaining debt.
+Shared fixtures live under `…/testing/` (`ControllableClock`, `ShellReducerFixtures`, `OriginTestFixtures`, `TestConventions`).  
+**TASK 31** shipped JVM unit suites for reducer/store/controller, origin policy, recovery, connectivity helpers, double-back / back navigator, external Intent validation, and WebView→shell routing. Run `:app:testDebugUnitTest`. Suites do **not** replace Orchestrator device QA.
+
+### 3.2c WebView validation (TASK 33)
+
+**Location:** `app/src/test/.../webview/` (+ `FakeWebResourceRequest` helper).  
+**Suites:** `MidnightWebSettingsValidationTest`, `MidnightWebViewClientNavigationTest`, `MidnightWebViewClientErrorRoutingTest`, `WebViewLifecycleCoordinatorTest`, `WebViewOfflineAndIntentValidationTest` (plus existing origin/routing suites).  
+**CI:** included in `:app:testDebugUnitTest`. Asserts Grande Document §08 WebSettings, main-frame-only error/Offline routing, external Intent gating, and lifecycle attach/pause/destroy.
+
+### 3.2d Regression suite (TASK 35)
+
+**Command:** `./gradlew :app:testDebugUnitTest` (CI) + optional `:app:connectedDebugAndroidTest` (local device).  
+
+| Area | Automated coverage | Suite(s) |
+|------|--------------------|----------|
+| Splash timing / CRT tokens | Floor 400–500ms, phosphor blink, colour field | `CrtTokenRegressionTest`; Compose floor + coerce |
+| Runtime / state transitions | Splash↔Ready↔Offline↔Retry↔Loading | `ShellRegressionFlowTest` + existing reducer/store/controller |
+| WebView init / config | Settings apply, chrome progress/title, origin home | `NavigationAndWebViewRegressionTest`, `MidnightWebChromeClientTest`, §3.2c |
+| Offline + Retry | Recovery success/fail, NetworkLost mid-session | `ShellRegressionFlowTest`, `ChannelRecoveryControllerTest` |
+| External links | Intent builders + same-origin reject | `NavigationAndWebViewRegressionTest`, `ExternalLinkNavigatorTest` |
+| Back navigation | Double-back MVP (history disabled) | `ShellRegressionFlowTest`, `ShellBackNavigatorTest` |
+| Lifecycle | Coordinator attach/pause/destroy/restore | `WebViewLifecycleCoordinatorTest` |
+| Connectivity | Bridge cold-start + Available→Unavailable | `ConnectivityShellBridgeTest`, `ConnectivityStatusTest` |
+| Accessibility | High-contrast secondary/disabled colours; Compose semantics | `ShellAccessibilityColorTest`; Splash/Offline Compose |
+
+**Not reasonably automated (manual / Orchestrator):** live Chromium loads; airplane-mode NetworkCallback on device; TalkBack announcements / reduce-motion system setting; Toast + Activity.finish; external app hand-off staying backgrounded; tap-to-unmute / geo / CRT inside the site; process death; signed sideload; orientation feel; system SplashScreen API plate.
 
 ### 3.3 Instrumented / Device (Orchestrator)
 
@@ -174,7 +203,7 @@ Release does **not** include:
 | WebView UA vs Chrome geo/weather | Playlist selection could diverge | Explicit Stage 6 QA |
 | Keep-awake not in MVP | Long sessions may dim screen | Phase 2-adjacent |
 | Unsigned CI release without keystore | Blocks Phase 1 sideload bar | Configure Codemagic android_signing |
-| No JVM unit tests yet | Regression safety for origin/back/reducer | Optional follow-up TASK |
+| Renderer process gone | Host returns true but does not remount WebView | Retry may hit a dead Chromium process — remount follow-up |
 
 ---
 

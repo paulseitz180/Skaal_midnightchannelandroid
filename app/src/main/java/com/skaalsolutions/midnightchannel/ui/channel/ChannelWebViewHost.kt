@@ -4,6 +4,8 @@ import android.webkit.WebView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import com.skaalsolutions.midnightchannel.ui.testing.ShellUiTestTags
 import com.skaalsolutions.midnightchannel.webview.MidnightWebChromeClientCallbacks
 import com.skaalsolutions.midnightchannel.webview.MidnightWebView
 import com.skaalsolutions.midnightchannel.webview.MidnightWebViewClientCallbacks
@@ -23,7 +25,9 @@ fun ChannelWebViewHost(
     onWebViewCreated: (WebView) -> Unit = {},
 ) {
     MidnightWebView(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .testTag(ShellUiTestTags.CHANNEL_HOST),
         contentVisible = contentVisible,
         clientCallbacks = clientCallbacks,
         chromeCallbacks = chromeCallbacks,
