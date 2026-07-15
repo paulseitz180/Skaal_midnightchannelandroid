@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 class SplashScreenComposeTest : MidnightComposeTest() {
 
     @Test
-    fun `splash shows wordmark caption and accessibility description`() {
+    fun splash_shows_wordmark_caption_and_accessibility_description() {
         composeRule.setMidnightContent {
             SplashScreen(minDisplayDurationMs = 60_000)
         }
@@ -29,7 +29,7 @@ class SplashScreenComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `splash floor elapsed callback fires after minimum duration`() {
+    fun splash_floor_elapsed_callback_fires_after_minimum_duration() {
         var elapsed = false
         composeRule.mainClock.autoAdvance = false
         composeRule.setMidnightContent {
@@ -50,7 +50,7 @@ class SplashScreenComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `splash can hide caption`() {
+    fun splash_can_hide_caption() {
         composeRule.setMidnightContent {
             SplashScreen(showCaption = false, minDisplayDurationMs = 60_000)
         }
@@ -59,7 +59,7 @@ class SplashScreenComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `splash floor coerces below four hundred milliseconds up to floor minimum`() {
+    fun splash_floor_coerces_below_four_hundred_milliseconds_up_to_floor_minimum() {
         // Production bible: floor lower bound 400ms even if a caller passes a shorter value.
         var elapsed = false
         composeRule.mainClock.autoAdvance = false

@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 class MidnightShellComposeTest : MidnightComposeTest() {
 
     @Test
-    fun `cold start shows splash overlay`() {
+    fun cold_start_shows_splash_overlay() {
         val shell = ShellController()
         composeRule.setMidnightContent {
             CompositionLocalProvider(LocalConnectivityMonitor provides null) {
@@ -45,7 +45,7 @@ class MidnightShellComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `network lost transitions splash to offline surface`() {
+    fun network_lost_transitions_splash_to_offline_surface() {
         val shell = ShellController()
         composeRule.setMidnightContent {
             CompositionLocalProvider(LocalConnectivityMonitor provides null) {
@@ -63,7 +63,7 @@ class MidnightShellComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `ready state hides splash and reveals channel host`() {
+    fun ready_state_hides_splash_and_reveals_channel_host() {
         val shell = ShellController()
         composeRule.mainClock.autoAdvance = true
         composeRule.setMidnightContent {
@@ -91,7 +91,7 @@ class MidnightShellComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `retry action from offline enters reconnecting via recovery`() {
+    fun retry_action_from_offline_enters_reconnecting_via_recovery() {
         val shell = ShellController()
         val recovery = ChannelRecoveryController(
             dispatch = shell::dispatch,
