@@ -20,8 +20,8 @@ package com.skaalsolutions.midnightchannel.testing
  *
  * Use backtick descriptive names that read as requirements:
  * ```
- * fun `splash advances only when floor and main-frame finish`()
- * fun `same origin rejects http scheme`()
+ * fun splash_advances_only_when_floor_and_main_frame_finish()
+ * fun same_origin_rejects_http_scheme()
  * ```
  *
  * Pattern: `{condition}_{expectedOutcome}` is also acceptable for shorter cases.

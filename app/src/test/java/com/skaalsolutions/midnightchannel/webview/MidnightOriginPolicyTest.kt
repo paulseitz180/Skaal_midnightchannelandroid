@@ -9,7 +9,7 @@ import androidx.core.net.toUri
 class MidnightOriginPolicyTest : MidnightRobolectricTest() {
 
     @Test
-    fun `https product host is same origin`() {
+    fun https_product_host_is_same_origin() {
         assertThat(MidnightOriginPolicy.isSameOrigin(OriginTestFixtures.homeHttps)).isTrue()
         assertThat(MidnightOriginPolicy.isSameOrigin(ChannelDestination.HOME_URL)).isTrue()
         assertThat(
@@ -18,7 +18,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `subdomain of product host is same origin`() {
+    fun subdomain_of_product_host_is_same_origin() {
         assertThat(
             MidnightOriginPolicy.isSameOrigin(
                 OriginTestFixtures.httpsOnHost(host = "www.midnightchannel.live"),
@@ -27,7 +27,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `http product host is not same origin`() {
+    fun http_product_host_is_not_same_origin() {
         assertThat(MidnightOriginPolicy.isSameOrigin(OriginTestFixtures.httpOnHost())).isFalse()
         assertThat(MidnightOriginPolicy.shouldLoadInsideWebView(OriginTestFixtures.httpOnHost()))
             .isFalse()
@@ -36,7 +36,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `external https leaves webview`() {
+    fun external_https_leaves_webview() {
         val external = OriginTestFixtures.externalHttps()
         assertThat(MidnightOriginPolicy.isSameOrigin(external)).isFalse()
         assertThat(MidnightOriginPolicy.shouldLoadInsideWebView(external)).isFalse()
@@ -44,7 +44,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `about and data are shell internal`() {
+    fun about_and_data_are_shell_internal() {
         assertThat(MidnightOriginPolicy.isShellInternalDocument(OriginTestFixtures.aboutBlank))
             .isTrue()
         assertThat(MidnightOriginPolicy.isShellInternalDocument(OriginTestFixtures.dataHtml))
@@ -56,7 +56,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `unsafe about and data schemes are not shell internal`() {
+    fun unsafe_about_and_data_schemes_are_not_shell_internal() {
         assertThat(
             MidnightOriginPolicy.isShellInternalDocument("about:config".toUri()),
         ).isFalse()
@@ -73,7 +73,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `mailto and tel leave webview`() {
+    fun mailto_and_tel_leave_webview() {
         assertThat(MidnightOriginPolicy.shouldLeaveWebView(OriginTestFixtures.mailto())).isTrue()
         assertThat(MidnightOriginPolicy.shouldLeaveWebView(OriginTestFixtures.tel())).isTrue()
         assertThat(MidnightOriginPolicy.shouldLoadInsideWebView(OriginTestFixtures.mailto()))
@@ -81,7 +81,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `null and blank urls are rejected`() {
+    fun null_and_blank_urls_are_rejected() {
         assertThat(MidnightOriginPolicy.isSameOrigin(null as String?)).isFalse()
         assertThat(MidnightOriginPolicy.isSameOrigin(null as android.net.Uri?)).isFalse()
         assertThat(MidnightOriginPolicy.shouldLoadInsideWebView(null)).isFalse()
@@ -89,7 +89,7 @@ class MidnightOriginPolicyTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `allowed host constant matches channel destination`() {
+    fun allowed_host_constant_matches_channel_destination() {
         assertThat(MidnightOriginPolicy.ALLOWED_HOST).isEqualTo(ChannelDestination.HOST)
     }
 }

@@ -36,21 +36,21 @@ class MidnightWebViewClientNavigationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `same-origin main frame stays inside webview`() {
+    fun same_origin_main_frame_stays_inside_webview() {
         val request = fakeWebResourceRequest(ChannelDestination.HOME_URL, isForMainFrame = true)
         assertThat(client.shouldOverrideUrlLoading(webView, request)).isFalse()
         assertThat(external).isEmpty()
     }
 
     @Test
-    fun `about blank stays inside webview`() {
+    fun about_blank_stays_inside_webview() {
         val request = fakeWebResourceRequest("about:blank", isForMainFrame = true)
         assertThat(client.shouldOverrideUrlLoading(webView, request)).isFalse()
         assertThat(external).isEmpty()
     }
 
     @Test
-    fun `external https main frame blocks load and emits external navigation`() {
+    fun external_https_main_frame_blocks_load_and_emits_external_navigation() {
         val uri = OriginTestFixtures.externalHttps()
         val request = fakeWebResourceRequest(uri.toString(), isForMainFrame = true)
         assertThat(client.shouldOverrideUrlLoading(webView, request)).isTrue()
@@ -58,7 +58,7 @@ class MidnightWebViewClientNavigationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `mailto main frame blocks load and emits external navigation`() {
+    fun mailto_main_frame_blocks_load_and_emits_external_navigation() {
         val uri = OriginTestFixtures.mailto()
         val request = fakeWebResourceRequest(uri.toString(), isForMainFrame = true)
         assertThat(client.shouldOverrideUrlLoading(webView, request)).isTrue()
@@ -66,7 +66,7 @@ class MidnightWebViewClientNavigationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `subframe external url is blocked without intent callback`() {
+    fun subframe_external_url_is_blocked_without_intent_callback() {
         val uri = OriginTestFixtures.externalHttps()
         val request = fakeWebResourceRequest(uri.toString(), isForMainFrame = false)
         assertThat(client.shouldOverrideUrlLoading(webView, request)).isTrue()
@@ -74,7 +74,7 @@ class MidnightWebViewClientNavigationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `subframe same-origin stays inside webview`() {
+    fun subframe_same_origin_stays_inside_webview() {
         val request = fakeWebResourceRequest(
             ChannelDestination.HOME_URL + "embed",
             isForMainFrame = false,
@@ -84,7 +84,7 @@ class MidnightWebViewClientNavigationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `http product host leaves webview as external`() {
+    fun http_product_host_leaves_webview_as_external() {
         val uri = OriginTestFixtures.httpOnHost()
         val request = fakeWebResourceRequest(uri.toString(), isForMainFrame = true)
         assertThat(client.shouldOverrideUrlLoading(webView, request)).isTrue()
@@ -94,7 +94,7 @@ class MidnightWebViewClientNavigationTest : MidnightRobolectricTest() {
     @Deprecated("Exercise string overload path")
     @Test
     @Suppress("DEPRECATION")
-    fun `string override delegates same as request path for external`() {
+    fun string_override_delegates_same_as_request_path_for_external() {
         val uri = OriginTestFixtures.externalHttps()
         assertThat(client.shouldOverrideUrlLoading(webView, uri.toString())).isTrue()
         assertThat(external).containsExactly(uri)

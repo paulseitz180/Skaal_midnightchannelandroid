@@ -19,7 +19,7 @@ import org.robolectric.RuntimeEnvironment
 class MidnightWebSettingsValidationTest : MidnightRobolectricTest() {
 
     @Test
-    fun `apply writes normative grande document settings`() {
+    fun apply_writes_normative_grande_document_settings() {
         val settings = mock<WebSettings>()
         val webView = mock<WebView> {
             on { getSettings() } doReturn settings
@@ -47,7 +47,7 @@ class MidnightWebSettingsValidationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `apply on real webview leaves user agent unchanged`() {
+    fun apply_on_real_webview_leaves_user_agent_unchanged() {
         val webView = WebView(RuntimeEnvironment.getApplication())
         val before = webView.settings.userAgentString
         MidnightWebSettings.apply(webView)
@@ -58,7 +58,7 @@ class MidnightWebSettingsValidationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `apply on real webview enables javascript and disables file access`() {
+    fun apply_on_real_webview_enables_javascript_and_disables_file_access() {
         // Spot-check getters that Robolectric shadows reliably persist.
         val webView = WebView(RuntimeEnvironment.getApplication())
         MidnightWebSettings.apply(webView)

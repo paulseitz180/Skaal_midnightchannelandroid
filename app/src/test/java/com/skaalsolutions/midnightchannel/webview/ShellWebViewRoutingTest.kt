@@ -9,7 +9,7 @@ import org.junit.Test
 class ShellWebViewRoutingTest : MidnightRobolectricTest() {
 
     @Test
-    fun `page started emits load started for origin url`() {
+    fun page_started_emits_load_started_for_origin_url() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onPageStarted(ChannelDestination.HOME_URL)
@@ -17,7 +17,7 @@ class ShellWebViewRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `page started ignores about blank`() {
+    fun page_started_ignores_about_blank() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onPageStarted("about:blank")
@@ -25,7 +25,7 @@ class ShellWebViewRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `page finished emits only for same origin`() {
+    fun page_finished_emits_only_for_same_origin() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onPageFinished(OriginTestFixtures.externalHttps().toString())
@@ -35,7 +35,7 @@ class ShellWebViewRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `main frame failure emits load failed`() {
+    fun main_frame_failure_emits_load_failed() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onMainFrameFailed(
@@ -49,7 +49,7 @@ class ShellWebViewRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `main frame failure on data document ignored`() {
+    fun main_frame_failure_on_data_document_ignored() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onMainFrameFailed(
@@ -59,7 +59,7 @@ class ShellWebViewRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `renderer recovery default emits load failed`() {
+    fun renderer_recovery_default_emits_load_failed() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onRendererRecoveryRequired(MainFrameFailure.RendererProcessGone(didCrash = true))

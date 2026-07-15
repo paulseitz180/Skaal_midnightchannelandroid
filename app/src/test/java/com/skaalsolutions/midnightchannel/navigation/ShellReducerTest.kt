@@ -10,7 +10,7 @@ import org.junit.Test
 class ShellReducerTest {
 
     @Test
-    fun `initial state is splash with gates unset`() {
+    fun initial_state_is_splash_with_gates_unset() {
         val state = ShellReducer.initial() as ShellState.Splash
         assertThat(state.floorElapsed).isFalse()
         assertThat(state.firstPaintReady).isFalse()
@@ -18,7 +18,7 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `splash advances only when floor and main-frame finish`() {
+    fun splash_advances_only_when_floor_and_main_frame_finish() {
         val afterFloor = ShellReducer.reduce(
             ShellState.Splash(),
             ShellEvent.SplashFloorElapsed,
@@ -41,7 +41,7 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `splash order independent for floor and paint`() {
+    fun splash_order_independent_for_floor_and_paint() {
         val paintThenFloor = ShellReducerFixtures.reduceAll(
             ShellState.Splash(),
             ShellEvent.MainFrameLoadFinished,
@@ -51,7 +51,7 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `splash network lost goes offline`() {
+    fun splash_network_lost_goes_offline() {
         assertThat(
             ShellReducer.reduce(ShellState.Splash(), ShellEvent.NetworkLost),
         ).isEqualTo(ShellState.Offline)
@@ -64,7 +64,7 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `ready reload start enters loading then ready on finish`() {
+    fun ready_reload_start_enters_loading_then_ready_on_finish() {
         val loading = ShellReducer.reduce(ShellState.Ready, ShellEvent.MainFrameLoadStarted)
         assertThat(loading).isEqualTo(ShellState.Loading)
 
@@ -73,14 +73,14 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `ready failure enters offline`() {
+    fun ready_failure_enters_offline() {
         assertThat(
             ShellReducer.reduce(ShellState.Ready, ShellEvent.NetworkLost),
         ).isEqualTo(ShellState.Offline)
     }
 
     @Test
-    fun `offline retry enters retrying then loading`() {
+    fun offline_retry_enters_retrying_then_loading() {
         val retrying = ShellReducer.reduce(ShellState.Offline, ShellEvent.RetryRequested)
         assertThat(retrying).isEqualTo(ShellState.Retrying)
 
@@ -89,21 +89,21 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `retrying may finish early to ready on main-frame finished`() {
+    fun retrying_may_finish_early_to_ready_on_main_frame_finished() {
         assertThat(
             ShellReducer.reduce(ShellState.Retrying, ShellEvent.MainFrameLoadFinished),
         ).isEqualTo(ShellState.Ready)
     }
 
     @Test
-    fun `retrying failure returns offline`() {
+    fun retrying_failure_returns_offline() {
         assertThat(
             ShellReducer.reduce(ShellState.Retrying, ShellEvent.RetryFailed),
         ).isEqualTo(ShellState.Offline)
     }
 
     @Test
-    fun `offline ignores non-retry events`() {
+    fun offline_ignores_non_retry_events() {
         assertThat(
             ShellReducer.reduce(ShellState.Offline, ShellEvent.MainFrameLoadFinished),
         ).isEqualTo(ShellState.Offline)
@@ -113,7 +113,7 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `retrying ignores nested retry until load started`() {
+    fun retrying_ignores_nested_retry_until_load_started() {
         assertThat(
             ShellReducer.reduce(ShellState.Retrying, ShellEvent.RetryRequested),
         ).isEqualTo(ShellState.Retrying)
@@ -123,7 +123,7 @@ class ShellReducerTest {
     }
 
     @Test
-    fun `loading ignores redundant start events`() {
+    fun loading_ignores_redundant_start_events() {
         assertThat(
             ShellReducer.reduce(ShellState.Loading, ShellEvent.MainFrameLoadStarted),
         ).isEqualTo(ShellState.Loading)

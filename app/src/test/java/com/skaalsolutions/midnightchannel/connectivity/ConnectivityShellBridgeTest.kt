@@ -23,7 +23,7 @@ import org.mockito.kotlin.verify
 class ConnectivityShellBridgeTest {
 
     @Test
-    fun `cold start unavailable dispatches NetworkLost once`() = runTest(UnconfinedTestDispatcher()) {
+    fun cold_start_unavailable_dispatches_NetworkLost_once() = runTest(UnconfinedTestDispatcher()) {
         val status = MutableStateFlow<ConnectivityStatus>(ConnectivityStatus.Unavailable)
         val monitor = fakeMonitor(status)
         val shell = ShellController()
@@ -36,7 +36,7 @@ class ConnectivityShellBridgeTest {
     }
 
     @Test
-    fun `cold start available does not force offline`() = runTest(UnconfinedTestDispatcher()) {
+    fun cold_start_available_does_not_force_offline() = runTest(UnconfinedTestDispatcher()) {
         val status = MutableStateFlow<ConnectivityStatus>(ConnectivityStatus.Available)
         val monitor = fakeMonitor(status)
         val shell = ShellController()
@@ -48,7 +48,7 @@ class ConnectivityShellBridgeTest {
     }
 
     @Test
-    fun `available to unavailable after start dispatches NetworkLost`() = runTest(UnconfinedTestDispatcher()) {
+    fun available_to_unavailable_after_start_dispatches_NetworkLost() = runTest(UnconfinedTestDispatcher()) {
         val status = MutableStateFlow<ConnectivityStatus>(ConnectivityStatus.Available)
         val monitor = fakeMonitor(status)
         val shell = ShellController()
@@ -65,7 +65,7 @@ class ConnectivityShellBridgeTest {
     }
 
     @Test
-    fun `unavailable to available does not auto retry into shell`() = runTest(UnconfinedTestDispatcher()) {
+    fun unavailable_to_available_does_not_auto_retry_into_shell() = runTest(UnconfinedTestDispatcher()) {
         val status = MutableStateFlow<ConnectivityStatus>(ConnectivityStatus.Unavailable)
         val monitor = fakeMonitor(status)
         val shell = ShellController()
@@ -80,7 +80,7 @@ class ConnectivityShellBridgeTest {
     }
 
     @Test
-    fun `stop cancels collection and stops monitor`() = runTest(UnconfinedTestDispatcher()) {
+    fun stop_cancels_collection_and_stops_monitor() = runTest(UnconfinedTestDispatcher()) {
         val status = MutableStateFlow<ConnectivityStatus>(ConnectivityStatus.Available)
         val monitor = fakeMonitor(status)
         val shell = ShellController()

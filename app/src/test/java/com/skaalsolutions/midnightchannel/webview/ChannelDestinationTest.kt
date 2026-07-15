@@ -6,7 +6,7 @@ import org.junit.Test
 class ChannelDestinationTest {
 
     @Test
-    fun `home url is https product host with trailing slash`() {
+    fun home_url_is_https_product_host_with_trailing_slash() {
         assertThat(ChannelDestination.HOST).isEqualTo("midnightchannel.live")
         assertThat(ChannelDestination.HOME_URL).isEqualTo("https://midnightchannel.live/")
         assertThat(ChannelDestination.HOME_URL).startsWith("https://")

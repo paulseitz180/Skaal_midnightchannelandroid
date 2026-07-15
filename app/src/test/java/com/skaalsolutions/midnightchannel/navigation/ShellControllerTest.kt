@@ -8,7 +8,7 @@ import org.junit.Test
 class ShellControllerTest {
 
     @Test
-    fun `dispatch drives store to ready`() {
+    fun dispatch_drives_store_to_ready() {
         val controller = ShellController()
         controller.dispatch(ShellEvent.SplashFloorElapsed)
         controller.dispatch(ShellEvent.MainFrameLoadFinished)
@@ -16,7 +16,7 @@ class ShellControllerTest {
     }
 
     @Test
-    fun `main-frame finished while ready clears recovery flight`() {
+    fun main_frame_finished_while_ready_clears_recovery_flight() {
         val controller = ShellController()
         controller.dispatch(ShellEvent.NetworkLost)
         assertThat(controller.current()).isEqualTo(ShellState.Offline)
@@ -38,7 +38,7 @@ class ShellControllerTest {
     }
 
     @Test
-    fun `retry failed clears recovery flight`() {
+    fun retry_failed_clears_recovery_flight() {
         val controller = ShellController()
         controller.dispatch(ShellEvent.NetworkLost)
         val recovery = ChannelRecoveryController(

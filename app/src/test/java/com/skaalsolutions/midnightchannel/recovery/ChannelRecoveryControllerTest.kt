@@ -10,7 +10,7 @@ import org.junit.Test
 class ChannelRecoveryControllerTest {
 
     @Test
-    fun `requestRetry rejected when not offline`() {
+    fun requestRetry_rejected_when_not_offline() {
         val events = mutableListOf<ShellEvent>()
         val recovery = ChannelRecoveryController(
             dispatch = { events += it },
@@ -23,7 +23,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `requestRetry rejected when network unavailable`() {
+    fun requestRetry_rejected_when_network_unavailable() {
         val events = mutableListOf<ShellEvent>()
         val recovery = ChannelRecoveryController(
             dispatch = { events += it },
@@ -35,7 +35,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `requestRetry dispatches when offline and available`() {
+    fun requestRetry_dispatches_when_offline_and_available() {
         val events = mutableListOf<ShellEvent>()
         val recovery = ChannelRecoveryController(
             dispatch = { events += it },
@@ -48,7 +48,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `overlapping requestRetry ignored while in flight`() {
+    fun overlapping_requestRetry_ignored_while_in_flight() {
         val events = mutableListOf<ShellEvent>()
         val recovery = ChannelRecoveryController(
             dispatch = { events += it },
@@ -61,7 +61,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `awaitAndStartReload fails when webView null`() = runTest {
+    fun awaitAndStartReload_fails_when_webView_null() = runTest {
         val events = mutableListOf<ShellEvent>()
         var state: ShellState = ShellState.Offline
         val recovery = ChannelRecoveryController(
@@ -80,7 +80,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `awaitAndStartReload fails when connectivity drops during label swap`() = runTest {
+    fun awaitAndStartReload_fails_when_connectivity_drops_during_label_swap() = runTest {
         val events = mutableListOf<ShellEvent>()
         var state: ShellState = ShellState.Offline
         var connectivity: ConnectivityStatus = ConnectivityStatus.Available
@@ -104,7 +104,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `onChannelReady and onChannelFailed are no-ops when idle`() {
+    fun onChannelReady_and_onChannelFailed_are_no_ops_when_idle() {
         val recovery = ChannelRecoveryController(
             dispatch = {},
             connectivitySnapshot = { ConnectivityStatus.Available },
@@ -116,7 +116,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `cancel clears in-flight session`() {
+    fun cancel_clears_in_flight_session() {
         val recovery = ChannelRecoveryController(
             dispatch = {},
             connectivitySnapshot = { ConnectivityStatus.Available },
@@ -130,7 +130,7 @@ class ChannelRecoveryControllerTest {
     }
 
     @Test
-    fun `awaitLoadOutcomeOrTimeout fails hung loading`() = runTest {
+    fun awaitLoadOutcomeOrTimeout_fails_hung_loading() = runTest {
         val events = mutableListOf<ShellEvent>()
         var state: ShellState = ShellState.Loading
         val recovery = ChannelRecoveryController(

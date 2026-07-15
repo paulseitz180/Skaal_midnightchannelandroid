@@ -7,7 +7,7 @@ import org.junit.Test
 class ShellBackNavigatorTest {
 
     @Test
-    fun `mvp disabled history always uses double-back gate`() {
+    fun mvp_disabled_history_always_uses_double_back_gate() {
         val clock = ControllableClock()
         val navigator = ShellBackNavigator(
             confirmationWindowMs = 2_000L,
@@ -20,7 +20,7 @@ class ShellBackNavigatorTest {
     }
 
     @Test
-    fun `history consume returns null and resets exit gate`() {
+    fun history_consume_returns_null_and_resets_exit_gate() {
         val clock = ControllableClock()
         val navigator = ShellBackNavigator(
             confirmationWindowMs = 2_000L,
@@ -38,7 +38,7 @@ class ShellBackNavigatorTest {
     }
 
     @Test
-    fun `history consume then resume exit confirmation on same navigator`() {
+    fun history_consume_then_resume_exit_confirmation_on_same_navigator() {
         var consumeHistory = true
         val clock = ControllableClock()
         val navigator = ShellBackNavigator(
@@ -55,7 +55,7 @@ class ShellBackNavigatorTest {
     }
 
     @Test
-    fun `reset clears armed toast`() {
+    fun reset_clears_armed_toast() {
         val clock = ControllableClock()
         val navigator = ShellBackNavigator(2_000L, nowMs = clock.asProvider)
         navigator.onBackPressed()

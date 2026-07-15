@@ -13,7 +13,7 @@ import org.robolectric.RuntimeEnvironment
 class WebViewLifecycleCoordinatorTest : MidnightRobolectricTest() {
 
     @Test
-    fun `attach exposes webview and detach destroy clears it`() {
+    fun attach_exposes_webview_and_detach_destroy_clears_it() {
         val coordinator = WebViewLifecycleCoordinator()
         val webView = WebView(RuntimeEnvironment.getApplication())
         coordinator.attach(webView)
@@ -24,7 +24,7 @@ class WebViewLifecycleCoordinatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `onHostDestroy clears refs without requiring second destroy`() {
+    fun onHostDestroy_clears_refs_without_requiring_second_destroy() {
         val coordinator = WebViewLifecycleCoordinator()
         val webView = WebView(RuntimeEnvironment.getApplication())
         coordinator.attach(webView)
@@ -36,13 +36,13 @@ class WebViewLifecycleCoordinatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `saveState returns null when nothing attached`() {
+    fun saveState_returns_null_when_nothing_attached() {
         val coordinator = WebViewLifecycleCoordinator()
         assertThat(coordinator.saveState()).isNull()
     }
 
     @Test
-    fun `saveState returns bundle when webview attached`() {
+    fun saveState_returns_bundle_when_webview_attached() {
         val coordinator = WebViewLifecycleCoordinator()
         val webView = WebView(RuntimeEnvironment.getApplication())
         coordinator.attach(webView)
@@ -52,7 +52,7 @@ class WebViewLifecycleCoordinatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `prepareRestore then attach consumes pending state once`() {
+    fun prepareRestore_then_attach_consumes_pending_state_once() {
         val coordinator = WebViewLifecycleCoordinator()
         val pending = Bundle().apply { putString("probe", "1") }
         coordinator.prepareRestore(pending)
@@ -66,7 +66,7 @@ class WebViewLifecycleCoordinatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `pause and resume are safe with and without attachment`() {
+    fun pause_and_resume_are_safe_with_and_without_attachment() {
         val coordinator = WebViewLifecycleCoordinator()
         coordinator.onHostPause()
         coordinator.onHostResume()

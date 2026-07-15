@@ -44,7 +44,7 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `main-frame network error routes to failure callback`() {
+    fun main_frame_network_error_routes_to_failure_callback() {
         val request = fakeWebResourceRequest(ChannelDestination.HOME_URL, isForMainFrame = true)
         val error = mock<WebResourceError> {
             on { errorCode } doReturn WebViewClient.ERROR_HOST_LOOKUP
@@ -58,7 +58,7 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `subframe network error does not route offline`() {
+    fun subframe_network_error_does_not_route_offline() {
         val request = fakeWebResourceRequest(
             "https://cdn.example.com/asset.js",
             isForMainFrame = false,
@@ -72,7 +72,7 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `main-frame http 500 routes offline`() {
+    fun main_frame_http_500_routes_offline() {
         val request = fakeWebResourceRequest(ChannelDestination.HOME_URL, isForMainFrame = true)
         val response = WebResourceResponse(
             "text/html",
@@ -89,7 +89,7 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `main-frame http 204 is ignored`() {
+    fun main_frame_http_204_is_ignored() {
         val request = fakeWebResourceRequest(ChannelDestination.HOME_URL, isForMainFrame = true)
         val response = WebResourceResponse(
             "text/plain",
@@ -104,7 +104,7 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `ssl error always cancels and routes when main frame url matches`() {
+    fun ssl_error_always_cancels_and_routes_when_main_frame_url_matches() {
         webView.loadUrl(ChannelDestination.HOME_URL)
         val handler = mock<SslErrorHandler>()
         val error = mock<SslError> {
@@ -118,7 +118,7 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `ssl error on different url cancels but does not force offline`() {
+    fun ssl_error_on_different_url_cancels_but_does_not_force_offline() {
         webView.loadUrl(ChannelDestination.HOME_URL)
         val handler = mock<SslErrorHandler>()
         val error = mock<SslError> {
@@ -131,7 +131,7 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `renderer process gone invokes recovery callback and claims ownership`() {
+    fun renderer_process_gone_invokes_recovery_callback_and_claims_ownership() {
         var recoveryCalled = false
         val recoveryClient = MidnightWebViewClient(
             MidnightWebViewClientCallbacks(

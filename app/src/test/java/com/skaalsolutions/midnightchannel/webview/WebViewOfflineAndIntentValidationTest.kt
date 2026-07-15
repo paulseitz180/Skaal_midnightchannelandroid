@@ -17,7 +17,7 @@ import org.junit.Test
 class WebViewOfflineAndIntentValidationTest : MidnightRobolectricTest() {
 
     @Test
-    fun `main-frame failure callback reduces splash to offline`() {
+    fun main_frame_failure_callback_reduces_splash_to_offline() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onMainFrameFailed(
@@ -33,7 +33,7 @@ class WebViewOfflineAndIntentValidationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `ready state goes offline on routed main-frame failure`() {
+    fun ready_state_goes_offline_on_routed_main_frame_failure() {
         val events = mutableListOf<ShellEvent>()
         val callbacks = shellRoutingWebViewCallbacks(emit = { events += it })
         callbacks.onMainFrameFailed(
@@ -45,7 +45,7 @@ class WebViewOfflineAndIntentValidationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `external leave-webview uris are externally handled for intents`() {
+    fun external_leave_webview_uris_are_externally_handled_for_intents() {
         val external = OriginTestFixtures.externalHttps()
         assertThat(MidnightOriginPolicy.shouldLeaveWebView(external)).isTrue()
         assertThat(ExternalLinkNavigator.isExternallyHandledUri(external)).isTrue()
@@ -57,7 +57,7 @@ class WebViewOfflineAndIntentValidationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `same-origin destination never leaves webview for intents`() {
+    fun same_origin_destination_never_leaves_webview_for_intents() {
         assertThat(MidnightOriginPolicy.shouldLeaveWebView(OriginTestFixtures.homeHttps))
             .isFalse()
         assertThat(ExternalLinkNavigator.isExternallyHandledUri(OriginTestFixtures.homeHttps))
@@ -68,13 +68,13 @@ class WebViewOfflineAndIntentValidationTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `channel destination is https product home`() {
+    fun channel_destination_is_https_product_home() {
         assertThat(ChannelDestination.HOME_URL).isEqualTo("https://midnightchannel.live/")
         assertThat(MidnightOriginPolicy.isSameOrigin(ChannelDestination.HOME_URL)).isTrue()
     }
 
     @Test
-    fun `crt blank document uses shared chrome background token`() {
+    fun crt_blank_document_uses_shared_chrome_background_token() {
         assertThat(CrtShellChrome.BACKGROUND_HEX).isEqualTo("#0A0A0A")
     }
 }

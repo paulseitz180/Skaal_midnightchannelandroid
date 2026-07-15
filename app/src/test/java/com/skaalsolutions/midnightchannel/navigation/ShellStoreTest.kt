@@ -6,7 +6,7 @@ import org.junit.Test
 class ShellStoreTest {
 
     @Test
-    fun `dispatch updates state for meaningful transitions`() {
+    fun dispatch_updates_state_for_meaningful_transitions() {
         val store = ShellStore()
         assertThat(store.current()).isInstanceOf(ShellState.Splash::class.java)
 
@@ -16,7 +16,7 @@ class ShellStoreTest {
     }
 
     @Test
-    fun `dispatch skips no-op transitions`() {
+    fun dispatch_skips_no_op_transitions() {
         val store = ShellStore()
         store.dispatch(ShellEvent.SplashFloorElapsed)
         store.dispatch(ShellEvent.MainFrameLoadFinished)
@@ -28,7 +28,7 @@ class ShellStoreTest {
     }
 
     @Test
-    fun `state flow mirrors current`() {
+    fun state_flow_mirrors_current() {
         val store = ShellStore()
         store.dispatch(ShellEvent.NetworkLost)
         assertThat(store.state.value).isEqualTo(ShellState.Offline)

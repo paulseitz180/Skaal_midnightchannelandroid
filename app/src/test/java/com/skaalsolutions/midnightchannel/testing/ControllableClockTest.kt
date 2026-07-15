@@ -6,7 +6,7 @@ import org.junit.Test
 class ControllableClockTest {
 
     @Test
-    fun `advance and set update provider`() {
+    fun advance_and_set_update_provider() {
         val clock = ControllableClock(10L)
         assertThat(clock.asProvider()).isEqualTo(10L)
         clock.advanceBy(5L)
@@ -16,7 +16,7 @@ class ControllableClockTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `advance rejects negative delta`() {
+    fun advance_rejects_negative_delta() {
         ControllableClock().advanceBy(-1L)
     }
 }

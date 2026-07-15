@@ -13,7 +13,7 @@ import org.mockito.kotlin.verify
 class MidnightWebChromeClientTest {
 
     @Test
-    fun `progress changed clamps to zero through one hundred`() {
+    fun progress_changed_clamps_to_zero_through_one_hundred() {
         val seen = mutableListOf<Int>()
         val client = MidnightWebChromeClient(
             MidnightWebChromeClientCallbacks(onProgressChanged = { seen += it }),
@@ -27,7 +27,7 @@ class MidnightWebChromeClientTest {
     }
 
     @Test
-    fun `received title forwards nullable title to callbacks`() {
+    fun received_title_forwards_nullable_title_to_callbacks() {
         var last: String? = "unset"
         val client = MidnightWebChromeClient(
             MidnightWebChromeClientCallbacks(onReceivedTitle = { last = it }),
@@ -41,20 +41,20 @@ class MidnightWebChromeClientTest {
     }
 
     @Test
-    fun `console message is always consumed so default chrome UI is suppressed`() {
+    fun console_message_is_always_consumed_so_default_chrome_UI_is_suppressed() {
         val client = MidnightWebChromeClient()
         assertThat(client.onConsoleMessage(consoleMessage = null)).isTrue()
     }
 
     @Test
-    fun `geolocation permission prompts are denied`() {
+    fun geolocation_permission_prompts_are_denied() {
         val callback = mock<GeolocationPermissions.Callback>()
         MidnightWebChromeClient().onGeolocationPermissionsShowPrompt("https://evil.example", callback)
         verify(callback).invoke("https://evil.example", false, false)
     }
 
     @Test
-    fun `webrtc permission requests are denied`() {
+    fun webrtc_permission_requests_are_denied() {
         val request = mock<PermissionRequest>()
         MidnightWebChromeClient().onPermissionRequest(request)
         verify(request).deny()

@@ -19,14 +19,14 @@ import org.robolectric.RuntimeEnvironment
 class NavigationAndWebViewRegressionTest : MidnightRobolectricTest() {
 
     @Test
-    fun `home destination remains https product host and same origin`() {
+    fun home_destination_remains_https_product_host_and_same_origin() {
         assertThat(ChannelDestination.HOME_URL).startsWith("https://")
         assertThat(MidnightOriginPolicy.isSameOrigin(OriginTestFixtures.homeHttps)).isTrue()
         assertThat(MidnightOriginPolicy.isSameOrigin(OriginTestFixtures.httpOnHost())).isFalse()
     }
 
     @Test
-    fun `external https builds view intent while same origin is not externally handled`() {
+    fun external_https_builds_view_intent_while_same_origin_is_not_externally_handled() {
         val external = OriginTestFixtures.externalHttps()
         assertThat(ExternalLinkNavigator.isExternallyHandledUri(external)).isTrue()
         val intent = ExternalLinkNavigator.buildValidatedIntent(external)
@@ -38,7 +38,7 @@ class NavigationAndWebViewRegressionTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `web settings apply keeps javascript on and custom ua off`() {
+    fun web_settings_apply_keeps_javascript_on_and_custom_ua_off() {
         val webView = WebView(RuntimeEnvironment.getApplication())
         val beforeUa = webView.settings.userAgentString
         MidnightWebSettings.apply(webView)

@@ -7,19 +7,19 @@ import org.junit.Test
 class DoubleBackExitGateTest {
 
     @Test(expected = IllegalArgumentException::class)
-    fun `rejects non-positive confirmation window`() {
+    fun rejects_non_positive_confirmation_window() {
         DoubleBackExitGate(confirmationWindowMs = 0L)
     }
 
     @Test
-    fun `first press shows exit toast`() {
+    fun first_press_shows_exit_toast() {
         val clock = ControllableClock(1_000L)
         val gate = DoubleBackExitGate(2_000L, clock.asProvider)
         assertThat(gate.evaluate()).isEqualTo(BackNavigationResult.ShowExitToast)
     }
 
     @Test
-    fun `second press within window exits`() {
+    fun second_press_within_window_exits() {
         val clock = ControllableClock(1_000L)
         val gate = DoubleBackExitGate(2_000L, clock.asProvider)
         assertThat(gate.evaluate()).isEqualTo(BackNavigationResult.ShowExitToast)
@@ -28,7 +28,7 @@ class DoubleBackExitGateTest {
     }
 
     @Test
-    fun `second press after window arms again with toast`() {
+    fun second_press_after_window_arms_again_with_toast() {
         val clock = ControllableClock(1_000L)
         val gate = DoubleBackExitGate(2_000L, clock.asProvider)
         assertThat(gate.evaluate()).isEqualTo(BackNavigationResult.ShowExitToast)
@@ -37,7 +37,7 @@ class DoubleBackExitGateTest {
     }
 
     @Test
-    fun `reset clears armed first press`() {
+    fun reset_clears_armed_first_press() {
         val clock = ControllableClock(1_000L)
         val gate = DoubleBackExitGate(2_000L, clock.asProvider)
         gate.evaluate()
@@ -47,7 +47,7 @@ class DoubleBackExitGateTest {
     }
 
     @Test
-    fun `exit disarms so next press is toast again`() {
+    fun exit_disarms_so_next_press_is_toast_again() {
         val clock = ControllableClock()
         val gate = DoubleBackExitGate(2_000L, clock.asProvider)
         gate.evaluate()

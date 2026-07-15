@@ -17,7 +17,7 @@ import org.junit.Test
 class CrtTokenRegressionTest {
 
     @Test
-    fun `splash floor and motion grammar match production bible defaults`() {
+    fun splash_floor_and_motion_grammar_match_production_bible_defaults() {
         val motion = CrtMotion()
         assertThat(motion.splashFlickerMinMs).isEqualTo(400)
         assertThat(motion.splashFlickerMs).isEqualTo(500)
@@ -29,7 +29,7 @@ class CrtTokenRegressionTest {
     }
 
     @Test
-    fun `crt colour tokens match live site theme-color phosphor and accent`() {
+    fun crt_colour_tokens_match_live_site_theme_color_phosphor_and_accent() {
         assertThat(CrtColors.Background.toArgb()).isEqualTo(0xFF0A0A0A.toInt())
         assertThat(CrtColors.Accent.toArgb()).isEqualTo(0xFF00FF41.toInt())
         assertThat(CrtColors.Phosphor.toArgb()).isEqualTo(0xFF00FF00.toInt())
@@ -38,14 +38,14 @@ class CrtTokenRegressionTest {
     }
 
     @Test
-    fun `crt field stops match live site body radial gradient`() {
+    fun crt_field_stops_match_live_site_body_radial_gradient() {
         assertThat(CrtField.Center.toArgb()).isEqualTo(0xFF0A0804.toInt())
         assertThat(CrtField.Mid.toArgb()).isEqualTo(0xFF020202.toInt())
         assertThat(CrtField.Edge.toArgb()).isEqualTo(0xFF000000.toInt())
     }
 
     @Test
-    fun `native type scale stays readable and monospace CRT`() {
+    fun native_type_scale_stays_readable_and_monospace_CRT() {
         assertThat(CrtTextStyles.body.fontSize.value).isAtLeast(16f)
         assertThat(CrtTextStyles.wordmark.fontFamily)
             .isEqualTo(CrtTextStyles.body.fontFamily)
@@ -55,7 +55,7 @@ class CrtTokenRegressionTest {
     }
 
     @Test
-    fun `spacing unit and hard edges remain CRT constraints`() {
+    fun spacing_unit_and_hard_edges_remain_CRT_constraints() {
         val spacing = CrtSpacing()
         assertThat(spacing.unit.value).isEqualTo(8f)
         assertThat(spacing.touchTargetMin.value).isEqualTo(48f)

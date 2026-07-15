@@ -30,7 +30,7 @@ import org.junit.Test
 class ShellRegressionFlowTest {
 
     @Test
-    fun `cold start splash then channel ready reveals content and clears splash`() {
+    fun cold_start_splash_then_channel_ready_reveals_content_and_clears_splash() {
         val shell = ShellController()
         assertThat(shell.current().showsSplashSurface).isTrue()
         assertThat(shell.current().revealsChannelContent).isFalse()
@@ -44,7 +44,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `cold start offline webview init failure routes to offline surface`() {
+    fun cold_start_offline_webview_init_failure_routes_to_offline_surface() {
         val shell = ShellController()
         shell.dispatch(ShellEvent.WebViewInitFailed)
 
@@ -55,7 +55,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `webview main-frame failure routes through shell callbacks to offline`() {
+    fun webview_main_frame_failure_routes_through_shell_callbacks_to_offline() {
         val shell = ShellController()
         ShellReducerFixtures.eventsToReady().forEach(shell::dispatch)
         val callbacks = shellRoutingWebViewCallbacks(emit = shell::dispatch)
@@ -73,7 +73,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `about blank page finished does not clear splash or offline`() {
+    fun about_blank_page_finished_does_not_clear_splash_or_offline() {
         val shell = ShellController()
         val callbacks = shellRoutingWebViewCallbacks(emit = shell::dispatch)
 
@@ -86,7 +86,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `offline retry success path reaches ready and clears recovery flight`() = runTest {
+    fun offline_retry_success_path_reaches_ready_and_clears_recovery_flight() = runTest {
         val shell = ShellController()
         val recovery = ChannelRecoveryController(
             dispatch = shell::dispatch,
@@ -110,7 +110,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `offline retry failure remains offline and clears recovery flight`() = runTest {
+    fun offline_retry_failure_remains_offline_and_clears_recovery_flight() = runTest {
         val shell = ShellController()
         val recovery = ChannelRecoveryController(
             dispatch = shell::dispatch,
@@ -129,7 +129,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `ready then mid session network lost returns to offline without splash`() {
+    fun ready_then_mid_session_network_lost_returns_to_offline_without_splash() {
         val shell = ShellController()
         ShellReducerFixtures.eventsToReady().forEach(shell::dispatch)
         shell.dispatch(ShellEvent.NetworkLost)
@@ -140,7 +140,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `mvp back navigation never consumes history and requires double press to exit`() {
+    fun mvp_back_navigation_never_consumes_history_and_requires_double_press_to_exit() {
         val clock = ControllableClock(1_000L)
         val navigator = ShellBackNavigator(
             confirmationWindowMs = 2_000L,
@@ -154,7 +154,7 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun `splash paint before floor still waits then advances when floor elapses`() {
+    fun splash_paint_before_floor_still_waits_then_advances_when_floor_elapses() {
         val shell = ShellController()
         shell.dispatch(ShellEvent.MainFrameLoadFinished)
         assertThat(shell.current().showsSplashSurface).isTrue()

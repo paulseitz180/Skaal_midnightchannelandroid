@@ -16,7 +16,7 @@ class ShellAccessibilityColorTest {
     private val colors = CrtColorPalette()
 
     @Test
-    fun `secondary copy uses phosphorMuted unless high contrast`() {
+    fun secondary_copy_uses_phosphorMuted_unless_high_contrast() {
         val normal = ShellAccessibilityState(
             highTextContrastEnabled = false,
             reduceMotionPreferred = false,
@@ -31,7 +31,7 @@ class ShellAccessibilityColorTest {
     }
 
     @Test
-    fun `disabled copy uses phosphorDim unless high contrast`() {
+    fun disabled_copy_uses_phosphorDim_unless_high_contrast() {
         val normal = ShellAccessibilityState(
             highTextContrastEnabled = false,
             reduceMotionPreferred = true,

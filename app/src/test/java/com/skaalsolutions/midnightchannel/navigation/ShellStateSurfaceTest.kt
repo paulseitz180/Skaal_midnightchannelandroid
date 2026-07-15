@@ -7,7 +7,7 @@ import org.junit.Test
 class ShellStateSurfaceTest {
 
     @Test
-    fun `splash surface flags`() {
+    fun splash_surface_flags() {
         val splash = ShellState.Splash()
         assertThat(splash.showsSplashSurface).isTrue()
         assertThat(splash.showsOfflineSurface).isFalse()
@@ -17,7 +17,7 @@ class ShellStateSurfaceTest {
     }
 
     @Test
-    fun `ready reveals channel and hides overlays`() {
+    fun ready_reveals_channel_and_hides_overlays() {
         assertThat(ShellState.Ready.revealsChannelContent).isTrue()
         assertThat(ShellState.Ready.showsSplashSurface).isFalse()
         assertThat(ShellState.Ready.showsOfflineSurface).isFalse()
@@ -25,12 +25,12 @@ class ShellStateSurfaceTest {
     }
 
     @Test
-    fun `loading reveals channel content`() {
+    fun loading_reveals_channel_content() {
         assertThat(ShellState.Loading.revealsChannelContent).isTrue()
     }
 
     @Test
-    fun `offline accepts retry`() {
+    fun offline_accepts_retry() {
         assertThat(ShellState.Offline.showsOfflineSurface).isTrue()
         assertThat(ShellState.Offline.acceptsRetry).isTrue()
         assertThat(ShellState.Offline.revealsChannelContent).isFalse()
@@ -38,14 +38,14 @@ class ShellStateSurfaceTest {
     }
 
     @Test
-    fun `retrying shows offline surface as reconnecting`() {
+    fun retrying_shows_offline_surface_as_reconnecting() {
         assertThat(ShellState.Retrying.showsOfflineSurface).isTrue()
         assertThat(ShellState.Retrying.isReconnecting).isTrue()
         assertThat(ShellState.Retrying.acceptsRetry).isFalse()
     }
 
     @Test
-    fun `happy path surfaces after reducer fixtures`() {
+    fun happy_path_surfaces_after_reducer_fixtures() {
         val ready = ShellReducerFixtures.reduceAll(
             ShellReducer.initial(),
             *ShellReducerFixtures.eventsToReady().toTypedArray(),

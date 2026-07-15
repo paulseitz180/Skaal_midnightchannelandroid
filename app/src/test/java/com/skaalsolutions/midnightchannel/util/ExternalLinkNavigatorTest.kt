@@ -10,7 +10,7 @@ import org.junit.Test
 class ExternalLinkNavigatorTest : MidnightRobolectricTest() {
 
     @Test
-    fun `same origin is not externally handled`() {
+    fun same_origin_is_not_externally_handled() {
         assertThat(ExternalLinkNavigator.isExternallyHandledUri(OriginTestFixtures.homeHttps))
             .isFalse()
         assertThat(ExternalLinkNavigator.isExternallyHandledUri(OriginTestFixtures.aboutBlank))
@@ -18,7 +18,7 @@ class ExternalLinkNavigatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `external https builds view intent`() {
+    fun external_https_builds_view_intent() {
         val uri = OriginTestFixtures.externalHttps()
         assertThat(ExternalLinkNavigator.isExternallyHandledUri(uri)).isTrue()
         val intent = ExternalLinkNavigator.buildValidatedIntent(uri)
@@ -28,14 +28,14 @@ class ExternalLinkNavigatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `mailto builds sendto intent`() {
+    fun mailto_builds_sendto_intent() {
         val intent = ExternalLinkNavigator.buildValidatedIntent(OriginTestFixtures.mailto())
         assertThat(intent).isNotNull()
         assertThat(intent!!.action).isEqualTo(Intent.ACTION_SENDTO)
     }
 
     @Test
-    fun `tel builds dial intent not call`() {
+    fun tel_builds_dial_intent_not_call() {
         val intent = ExternalLinkNavigator.buildValidatedIntent(OriginTestFixtures.tel())
         assertThat(intent).isNotNull()
         assertThat(intent!!.action).isEqualTo(Intent.ACTION_DIAL)
@@ -43,17 +43,17 @@ class ExternalLinkNavigatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `invalid http without host rejected`() {
+    fun invalid_http_without_host_rejected() {
         assertThat(ExternalLinkNavigator.buildValidatedIntent("https://".toUri())).isNull()
     }
 
     @Test
-    fun `tel without digits rejected`() {
+    fun tel_without_digits_rejected() {
         assertThat(ExternalLinkNavigator.buildValidatedIntent("tel:not-a-number".toUri())).isNull()
     }
 
     @Test
-    fun `sanitized intents clear package component and grant flags`() {
+    fun sanitized_intents_clear_package_component_and_grant_flags() {
         val intent = ExternalLinkNavigator.buildValidatedIntent(OriginTestFixtures.externalHttps())
         assertThat(intent).isNotNull()
         assertThat(intent!!.`package`).isNull()
@@ -63,7 +63,7 @@ class ExternalLinkNavigatorTest : MidnightRobolectricTest() {
     }
 
     @Test
-    fun `intent uri with install action rejected`() {
+    fun intent_uri_with_install_action_rejected() {
         val uri =
             "intent://example.com#Intent;scheme=https;action=android.intent.action.INSTALL_PACKAGE;end"
                 .toUri()

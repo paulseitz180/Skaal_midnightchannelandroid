@@ -19,7 +19,7 @@ import org.junit.runner.RunWith
 class OfflineErrorScreenComposeTest : MidnightComposeTest() {
 
     @Test
-    fun `offline shows signal lost copy and retry`() {
+    fun offline_shows_signal_lost_copy_and_retry() {
         composeRule.setMidnightContent {
             OfflineErrorScreen(retryEnabled = true)
         }
@@ -38,7 +38,7 @@ class OfflineErrorScreenComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `retry action invokes callback when enabled`() {
+    fun retry_action_invokes_callback_when_enabled() {
         var clicks = 0
         composeRule.setMidnightContent {
             OfflineErrorScreen(
@@ -55,7 +55,7 @@ class OfflineErrorScreenComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `retry disabled when no network`() {
+    fun retry_disabled_when_no_network() {
         var clicks = 0
         composeRule.setMidnightContent {
             OfflineErrorScreen(
@@ -75,7 +75,7 @@ class OfflineErrorScreenComposeTest : MidnightComposeTest() {
     }
 
     @Test
-    fun `reconnecting state shows reconnecting label and blocks retry`() {
+    fun reconnecting_state_shows_reconnecting_label_and_blocks_retry() {
         var clicks = 0
         composeRule.setMidnightContent {
             OfflineErrorScreen(
