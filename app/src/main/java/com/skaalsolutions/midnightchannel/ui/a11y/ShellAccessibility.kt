@@ -5,7 +5,6 @@ import android.content.Context
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
@@ -23,13 +22,12 @@ data class ShellAccessibilityState(
 @Composable
 fun rememberShellAccessibilityState(): ShellAccessibilityState {
     val context = LocalContext.current
-    return remember(context) {
-        val am = context.getSystemService<AccessibilityManager>()
-        ShellAccessibilityState(
-            highTextContrastEnabled = isHighTextContrastEnabled(context),
-            reduceMotionPreferred = isReduceMotionPreferred(context, am),
-        )
-    }
+    // Read each composition — cheap; reflects system setting changes without restart.
+    val am = context.getSystemService<AccessibilityManager>()
+    return ShellAccessibilityState(
+        highTextContrastEnabled = isHighTextContrastEnabled(context),
+        reduceMotionPreferred = isReduceMotionPreferred(context, am),
+    )
 }
 
 /** Secondary body copy — full phosphor under high-text-contrast mode. */

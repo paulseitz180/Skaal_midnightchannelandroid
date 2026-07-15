@@ -5,7 +5,7 @@
 **Parent product:** [midnightchannel.live](https://midnightchannel.live) (live, Netlify-hosted, vanilla HTML/CSS/JS)  
 **Build system:** Skaal Vibe Coding Product Build System v7.3  
 **Stakeholder / Orchestrator:** Paul Seitz (Skaal Solutions)  
-**Implementation status:** MVP shell complete (TASKS 01–26); `/docs` refreshed in TASK 27
+**Implementation status:** MVP shell complete (TASKS 01–43); Orchestrator owns commit, device QA, and release
 
 ---
 
@@ -44,7 +44,7 @@ This assignment builds a **thin native Android shell** whose sole job is to deli
 
 1. **Native Android app shell** that loads `https://midnightchannel.live/` inside a full-screen embedded WebView and reproduces the browser experience — same environmental DJ engine, same tap-to-unmute gate, same CRT visual treatment. Nothing added, nothing removed.
 2. **Home-screen launcher icon and app label** (`Midnight Channel`).
-3. **Native splash screen** (system + Compose CRT) bridging cold start to first main-frame finish, floor ~400–600ms (default 500ms).
+3. **Native splash screen** (system + Compose CRT) with wordmark, caption `tuning in…`, and phosphor blink — bridging cold start to first main-frame finish, floor ~400–600ms (default 500ms).
 4. **Native offline / connection-error screen** (`SIGNAL LOST` + Retry / RECONNECTING…) replacing the WebView default browser error page.
 5. **Double-press back exit** (~2s window) with toast + TalkBack announcement — no modal; WebView history back is **disabled** in MVP.
 6. **External-link handling** — HTTPS same-origin stays in WebView; other approved schemes open via validated external Intents; app remains in background.
@@ -112,7 +112,7 @@ Exit Confirmation is a toast (+ accessibility announcement), not a screen.
 | `SYSTEM_ARCHITECTURE.md` | Android / Compose / WebView architecture, lifecycle, state, navigation, security |
 | `PROJECT_STRUCTURE.md` | Repository and package layout (as shipped) |
 | `ENGINEERING_SPECIFICATION.md` | Manifest, WebSettings, screens, config must-haves |
-| `BUILD_SEQUENCE.md` | Stage 5+ TASK sequence (00–27) and pipeline gates |
+| `BUILD_SEQUENCE.md` | Stage 5+ TASK sequence (00–40) and pipeline gates |
 | `CODING_STANDARDS.md` | Implementation constraints |
 | `QA_STRATEGY.md` | Testing, CI/CD, release, and stage gates |
 

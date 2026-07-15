@@ -41,22 +41,23 @@ import com.skaalsolutions.midnightchannel.ui.a11y.accessibleSecondary
 import com.skaalsolutions.midnightchannel.ui.a11y.announceForAccessibility
 import com.skaalsolutions.midnightchannel.ui.a11y.rememberShellAccessibilityState
 import com.skaalsolutions.midnightchannel.ui.testing.ShellUiTestTags
+import com.skaalsolutions.midnightchannel.ui.theme.DEFAULT_SPLASH_FLICKER_MS
 import com.skaalsolutions.midnightchannel.ui.theme.MidnightTheme
-import com.skaalsolutions.midnightchannel.ui.theme.crtFieldBackground
 import kotlinx.coroutines.delay
 
 /**
  * Native CRT Splash Screen (Grande Document Screen Blueprint 1).
  *
- * Visual language mirrors live midnightchannel.live: site body radial field,
- * phosphor wordmark + glow, tap-prompt-style step blink (2s / 0.15 floor).
+ * Visual language mirrors live midnightchannel.live: phosphor wordmark + glow,
+ * tap-prompt-style step blink (2s / 0.15 floor). CRT field is painted once by
+ * [com.skaalsolutions.midnightchannel.ui.theme.MidnightChannelTheme] (no stacked gradients).
  * Accessibility: merged pane description, polite live region, TalkBack announce,
  * scalable type with scroll, reduce-motion disables phosphor flicker.
  */
 @Composable
 fun SplashScreen(
     modifier: Modifier = Modifier,
-    minDisplayDurationMs: Int = MidnightTheme.motion.splashFlickerMs,
+    minDisplayDurationMs: Int = DEFAULT_SPLASH_FLICKER_MS,
     showCaption: Boolean = true,
     contentAlpha: Float = 1f,
     onMinimumDurationElapsed: () -> Unit = {},
@@ -105,7 +106,6 @@ fun SplashScreen(
         modifier = modifier
             .fillMaxSize()
             .alpha(contentAlpha.coerceIn(0f, 1f))
-            .crtFieldBackground()
             .testTag(ShellUiTestTags.SPLASH_ROOT)
             .semantics(mergeDescendants = true) {
                 contentDescription = accessibilityDescription

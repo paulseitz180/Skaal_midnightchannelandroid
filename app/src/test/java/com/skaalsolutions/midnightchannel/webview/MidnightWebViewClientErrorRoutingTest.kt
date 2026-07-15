@@ -1,6 +1,7 @@
 package com.skaalsolutions.midnightchannel.webview
 
 import android.net.http.SslError
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceResponse
@@ -127,5 +128,20 @@ class MidnightWebViewClientErrorRoutingTest : MidnightRobolectricTest() {
         client.onReceivedSslError(webView, handler, error)
         verify(handler).cancel()
         assertThat(failures).isEmpty()
+    }
+
+    @Test
+    fun `renderer process gone invokes recovery callback and claims ownership`() {
+        var recoveryCalled = false
+        val recoveryClient = MidnightWebViewClient(
+            MidnightWebViewClientCallbacks(
+                onRendererRecoveryRequired = { recoveryCalled = true },
+            ),
+        )
+        val detail = mock<RenderProcessGoneDetail> {
+            on { didCrash() } doReturn true
+        }
+        assertThat(recoveryClient.onRenderProcessGone(webView, detail)).isTrue()
+        assertThat(recoveryCalled).isTrue()
     }
 }

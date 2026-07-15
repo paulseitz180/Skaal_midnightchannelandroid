@@ -59,12 +59,12 @@ import com.skaalsolutions.midnightchannel.ui.a11y.announceForAccessibility
 import com.skaalsolutions.midnightchannel.ui.a11y.rememberShellAccessibilityState
 import com.skaalsolutions.midnightchannel.ui.testing.ShellUiTestTags
 import com.skaalsolutions.midnightchannel.ui.theme.MidnightTheme
-import com.skaalsolutions.midnightchannel.ui.theme.crtFieldBackground
 
 /**
  * Native Offline / Error Screen (Grande Document Screen Blueprint 3).
  *
- * Accessibility: heading → helper → 48dp Retry (keyboard-focusable), live region,
+ * CRT field comes from [com.skaalsolutions.midnightchannel.ui.theme.MidnightChannelTheme]
+ * (single radial draw). Accessibility: heading → helper → 48dp Retry, live region,
  * state descriptions for reconnecting / no-network, high-contrast secondary copy.
  */
 @Composable
@@ -95,7 +95,6 @@ fun OfflineErrorScreen(
         modifier = modifier
             .fillMaxSize()
             .alpha(contentAlpha.coerceIn(0f, 1f))
-            .crtFieldBackground()
             .testTag(ShellUiTestTags.OFFLINE_ROOT)
             .semantics {
                 contentDescription = screenDescription

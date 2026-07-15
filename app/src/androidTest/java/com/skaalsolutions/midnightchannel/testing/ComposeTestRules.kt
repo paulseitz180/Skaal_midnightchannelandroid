@@ -28,7 +28,7 @@ object ComposeTestRules {
 
 /**
  * Base for isolated Compose UI tests. Subclasses declare additional rules as needed.
- * Set content inside `@Test` methods (added in later TASKs) via [setMidnightContent].
+ * Set content inside `@Test` methods via [setMidnightContent].
  */
 abstract class MidnightComposeTest {
 

@@ -27,8 +27,7 @@ class MidnightWebChromeClient(
     callbacks: MidnightWebChromeClientCallbacks = MidnightWebChromeClientCallbacks(),
 ) : WebChromeClient() {
 
-    @Volatile
-    var callbacks: MidnightWebChromeClientCallbacks = callbacks
+    private val callbacks: MidnightWebChromeClientCallbacks = callbacks
 
     override fun onProgressChanged(view: WebView?, newProgress: Int) {
         callbacks.onProgressChanged(newProgress.coerceIn(0, 100))

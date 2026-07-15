@@ -3,6 +3,7 @@ package com.skaalsolutions.midnightchannel.webview
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -74,6 +75,10 @@ fun MidnightWebView(
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
             setBackgroundColor(CrtWebViewBackgroundColor)
+            // Site is non-scrolling immersion; skip glow / scrollbar compositor work.
+            overScrollMode = View.OVER_SCROLL_NEVER
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
             MidnightWebSettings.apply(this)
             this.webViewClient = webViewClient
             this.webChromeClient = webChromeClient
@@ -97,8 +102,11 @@ fun MidnightWebView(
         modifier = modifier.fillMaxSize(),
         update = { view ->
             // INVISIBLE (not Compose alpha) — skips compositing while Splash/Offline cover.
-            view.visibility =
+            val next =
                 if (visibleState.value) View.VISIBLE else View.INVISIBLE
+            if (view.visibility != next) {
+                view.visibility = next
+            }
         },
     )
 }
@@ -137,6 +145,9 @@ internal fun disposeWebView(webView: WebView) {
         webView.loadUrl("about:blank")
         (webView.parent as? ViewGroup)?.removeView(webView)
         webView.removeAllViews()
+        // Drop client refs before destroy so Chromium does not retain shell callbacks.
+        webView.webViewClient = WebViewClient()
+        webView.webChromeClient = null
         webView.destroy()
     }
 }

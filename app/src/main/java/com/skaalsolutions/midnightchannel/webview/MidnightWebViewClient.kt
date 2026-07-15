@@ -18,7 +18,7 @@ import androidx.core.net.toUri
 /**
  * Production [WebViewClient] for the Midnight Channel shell (Grande Document §08).
  *
- * Navigation rules (TASK 13):
+ * Navigation:
  * - Same-origin `midnightchannel.live` → stay inside the WebView
  * - External / special schemes → block in-WebView load and delegate to
  *   [MidnightWebViewClientCallbacks.onExternalNavigation] (Intents)
@@ -29,8 +29,7 @@ class MidnightWebViewClient(
     callbacks: MidnightWebViewClientCallbacks = MidnightWebViewClientCallbacks(),
 ) : WebViewClient() {
 
-    @Volatile
-    var callbacks: MidnightWebViewClientCallbacks = callbacks
+    private val callbacks: MidnightWebViewClientCallbacks = callbacks
 
     // —— Page lifecycle ——
 

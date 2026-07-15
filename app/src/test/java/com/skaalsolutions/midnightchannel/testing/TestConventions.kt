@@ -1,7 +1,7 @@
 package com.skaalsolutions.midnightchannel.testing
 
 /**
- * Naming and packaging conventions for Midnight Channel tests (TASK 30).
+ * Naming and packaging conventions for Midnight Channel tests.
  *
  * ## Source sets
  *
@@ -13,7 +13,7 @@ package com.skaalsolutions.midnightchannel.testing
  * ## Class names
  *
  * - Unit: `{TypeUnderTest}Test` — e.g. `ShellReducerTest`, `MidnightOriginPolicyTest`
- * - Instrumentation: `{Surface}InstrumentedTest` — e.g. `MainActivityInstrumentedTest`
+ * - Instrumentation: `{Surface}ComposeTest` or `{Surface}InstrumentedTest`
  * - Compose UI: `{Screen}ComposeTest` — e.g. `OfflineErrorScreenComposeTest`
  *
  * ## Method names
@@ -37,10 +37,10 @@ package com.skaalsolutions.midnightchannel.testing
  *   connectivity/     ConnectivityStatus + ConnectivityShellBridge
  *   a11y/             ShellAccessibility colour helpers
  *   theme/            CrtMotion / palette regression locks
- *   regression/       Cross-TASK integration scenarios (TASK 35)
+ *   regression/       Cross-TASK integration scenarios
  *
  * androidTest/.../midnightchannel/
- *   testing/          Compose rules + UI fixtures
+ *   testing/          Compose rules + conventions
  *   ui/               Splash / Offline / Shell Compose tests
  * ```
  *

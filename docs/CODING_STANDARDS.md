@@ -2,7 +2,7 @@
 
 **Source of truth:** Grande Document v1.0 — Scope Discipline, Interaction Philosophy, Sections 08–09  
 **Scope of this file:** Rules for Kotlin / Compose / WebView implementation.  
-**Implementation status:** Aligned to shipped MVP (TASK 27)
+**Implementation status:** Aligned to shipped MVP (TASKS 01–38); documentation finalized TASK 40
 
 ---
 
@@ -61,7 +61,8 @@ Violating a “Forbidden” row is treated as an architecture defect in review.
 - Minimum touch target **48dp** on native interactive controls.
 - Respect system font scaling and reduce-motion on Splash and Offline/Error.
 - No bottom sheets, tab bars, swipe-to-refresh, or haptic feedback.
-- Motion timings from `CrtMotion` (splash 400–600ms, cross-fade 200ms, Retry label 150ms, exit window 2000ms).
+- Motion timings from `CrtMotion` (splash floor 400–600ms, phosphor blink 2000ms, cross-fade 200ms, Retry label 150ms, exit window 2000ms).
+- CRT field is painted once at theme level (`CrtField.kt`); do not duplicate field layers on individual screens.
 - Keep WebView mounted under Splash/Offline overlays (`View.INVISIBLE`); do not tear down the instance for overlay transitions.
 
 ---
@@ -116,7 +117,7 @@ Still write code that is *testable* where cheap:
 - Pure helpers (`MidnightOriginPolicy`, `DoubleBackExitGate`, `ShellReducer`) should be unit-testable without WebView.
 - Do not block TASK completion on full Emulator suites unless Orchestrator requests it.
 
-See `QA_STRATEGY.md` for formal test and CI expectations. JVM unit suites for origin / double-back / reducer / WebView / regression ship under `app/src/test` and run on CI (`:app:testDebugUnitTest`).
+See `QA_STRATEGY.md` for formal test and CI expectations. **128** JVM unit tests across 24 suites ship under `app/src/test` and run on Codemagic CI and release workflows (`:app:testDebugUnitTest`).
 
 ---
 
@@ -136,4 +137,4 @@ See `QA_STRATEGY.md` for formal test and CI expectations. JVM unit suites for or
 
 ## 11. Documentation Sync
 
-If implementation must diverge from `/docs` or the Grande Document, **stop and escalate to the Orchestrator**. Do not silently redesign. After approved changes, update `/docs` (as in TASK 27) before treating the divergence as permanent.
+If implementation must diverge from `/docs` or the Grande Document, **stop and escalate to the Orchestrator**. Do not silently redesign. After approved changes, update `/docs` (as in TASK 40) before treating the divergence as permanent.

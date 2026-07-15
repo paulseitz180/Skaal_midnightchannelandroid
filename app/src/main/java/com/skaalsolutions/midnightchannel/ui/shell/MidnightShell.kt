@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skaalsolutions.midnightchannel.connectivity.ConnectivityStatus
 import com.skaalsolutions.midnightchannel.connectivity.LocalConnectivityMonitor
 import com.skaalsolutions.midnightchannel.connectivity.isRetryAvailable
@@ -34,7 +34,6 @@ import com.skaalsolutions.midnightchannel.ui.channel.ChannelWebViewHost
 import com.skaalsolutions.midnightchannel.ui.offline.OfflineErrorScreen
 import com.skaalsolutions.midnightchannel.ui.splash.SplashScreen
 import com.skaalsolutions.midnightchannel.ui.theme.MidnightTheme
-import com.skaalsolutions.midnightchannel.ui.theme.crtFieldBackground
 import com.skaalsolutions.midnightchannel.util.WebViewHistoryBackHandler
 import com.skaalsolutions.midnightchannel.webview.ChannelDestination
 import com.skaalsolutions.midnightchannel.webview.shellRoutingWebViewCallbacks
@@ -42,10 +41,12 @@ import com.skaalsolutions.midnightchannel.webview.shellRoutingWebViewCallbacks
 /**
  * Production shell composition driven exclusively by [ShellController].
  *
- * Performance notes (TASK 20):
+ * Performance:
  * - Connectivity Flow collected only while Offline surface is visible
  * - WebView uses View.INVISIBLE under overlays (not Compose alpha)
  * - Stable WebView create / load callbacks via rememberUpdatedState
+ * - CRT field painted once by [com.skaalsolutions.midnightchannel.ui.theme.MidnightChannelTheme]
+ * - Shell state collected with lifecycle awareness (no work while STOPPED)
  */
 @Composable
 fun MidnightShell(
@@ -57,9 +58,10 @@ fun MidnightShell(
     val connectivityMonitor = LocalConnectivityMonitor.current
     val recovery = shell.recovery
 
-    val shellState by shell.state.collectAsState()
+    val shellState by shell.state.collectAsStateWithLifecycle()
     val showOffline = shellState.showsOfflineSurface
     val revealChannel = shellState.revealsChannelContent
+    val showSplash = shellState.showsSplashSurface
 
     // Collect network status only while Offline/Retrying — skip churn during Ready.
     var connectivity by remember {
@@ -78,6 +80,7 @@ fun MidnightShell(
     var recoveryTick by remember { mutableIntStateOf(0) }
 
     val onSplashFloor = rememberUpdatedState(onSplashFloorElapsed)
+    val shellRef = rememberUpdatedState(shell)
 
     DisposableEffect(recovery) {
         onDispose { recovery?.cancel() }
@@ -104,6 +107,28 @@ fun MidnightShell(
         )
     }
 
+    val onWebViewCreated = remember {
+        { webView: WebView ->
+            webViewRef = webView
+            if (!initialLoadStarted) {
+                initialLoadStarted = true
+                val restoredUrl = webView.url
+                val needsLoad = restoredUrl.isNullOrBlank() ||
+                    restoredUrl == "about:blank" ||
+                    restoredUrl.startsWith("data:")
+                if (needsLoad) {
+                    runCatching {
+                        webView.loadUrl(ChannelDestination.HOME_URL)
+                    }.onFailure {
+                        shellRef.value.dispatch(ShellEvent.WebViewInitFailed)
+                    }
+                } else {
+                    shellRef.value.dispatch(ShellEvent.MainFrameLoadFinished)
+                }
+            }
+        }
+    }
+
     val isRetrying = shellState is ShellState.Retrying
     LaunchedEffect(isRetrying, recoveryTick) {
         if (!isRetrying) return@LaunchedEffect
@@ -126,44 +151,24 @@ fun MidnightShell(
     )
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .crtFieldBackground(),
+        modifier = modifier.fillMaxSize(),
     ) {
         ChannelWebViewHost(
             modifier = Modifier.fillMaxSize(),
             contentVisible = revealChannel,
             clientCallbacks = clientCallbacks,
-            onWebViewCreated = { webView ->
-                webViewRef = webView
-                if (!initialLoadStarted) {
-                    initialLoadStarted = true
-                    val restoredUrl = webView.url
-                    val needsLoad = restoredUrl.isNullOrBlank() ||
-                        restoredUrl == "about:blank" ||
-                        restoredUrl.startsWith("data:")
-                    if (needsLoad) {
-                        runCatching {
-                            webView.loadUrl(ChannelDestination.HOME_URL)
-                        }.onFailure {
-                            shell.dispatch(ShellEvent.WebViewInitFailed)
-                        }
-                    } else {
-                        shell.dispatch(ShellEvent.MainFrameLoadFinished)
-                    }
-                }
-            },
+            onWebViewCreated = onWebViewCreated,
         )
 
         AnimatedVisibility(
-            visible = shellState.showsSplashSurface,
+            visible = showSplash,
             enter = fadeInSpec,
             exit = fadeOutSpec,
         ) {
             SplashScreen(
                 onMinimumDurationElapsed = {
                     onSplashFloor.value()
-                    shell.dispatch(ShellEvent.SplashFloorElapsed)
+                    shellRef.value.dispatch(ShellEvent.SplashFloorElapsed)
                 },
             )
         }

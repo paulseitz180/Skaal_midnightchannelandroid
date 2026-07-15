@@ -1,7 +1,7 @@
 # PROJECT STRUCTURE — Midnight Channel Android Application
 
 **Source of truth:** Grande Document v1.0 — Assignment Identity, Documents 5–6, Sections 08–09  
-**Implementation status:** Reflects the shipped repository after TASKS 01–36 (structure/docs synced; engineering audit TASK 36)
+**Implementation status:** Reflects the shipped repository after TASKS 01–41 (repository cleanup)
 
 ---
 
@@ -39,7 +39,7 @@ Skaal_midnightchannelandroid/
 │       │       └── regression/        # Cross-TASK scenarios (TASK 35)
 │       └── androidTest/               # Instrumentation + Compose UI tests
 │           └── java/com/skaalsolutions/midnightchannel/
-│               ├── testing/           # Compose rules + UI tags
+│               ├── testing/           # Compose rules + conventions
 │               └── ui/
 ├── gradle/
 │   └── libs.versions.toml
@@ -70,7 +70,7 @@ Optional later: root `README.md` onboarding pointer to `/docs` (not required for
 com.skaalsolutions.midnightchannel/
 ├── MainActivity.kt                 # Single Activity; Compose setContent; lifecycle glue
 ├── ui/
-│   ├── theme/                      # CRT colors, typography, spacing, shapes, motion, field brush
+│   ├── theme/                      # CRT colors, typography, spacing, shapes, motion, CrtField.kt
 │   ├── shell/                      # MidnightShell + ShellBackHandler
 │   ├── splash/                     # SplashScreen
 │   ├── channel/                    # ChannelWebViewHost
@@ -172,7 +172,7 @@ Native copy (Offline/Error), per Screen Blueprints:
 | Path / artifact | Purpose |
 |-----------------|---------|
 | Gradle Kotlin DSL + version catalog | Android Application, Compose compiler, minSdk 26, compile/target 36 |
-| `codemagic.yaml` | `midnight-channel-ci` (lint + debug APK); release workflow (R8 APK/AAB) |
+| `codemagic.yaml` | `midnight-channel-ci` (lint + unit tests + debug APK); release workflow (lint + unit tests + R8 APK/AAB) |
 | `keystore.properties.example` | Local signing template (secrets not committed) |
 | `proguard-rules.pro` | Release R8 keep rules for WebView / shell |
 
@@ -191,7 +191,7 @@ Confirmed tool stack:
 | Artifact | Role |
 |----------|------|
 | Grande Document (`.docx` at repo root) | Authoritative product + architecture foundation |
-| `/docs/*.md` | Engineering working set — must not contradict the Grande Document; TASK 27 syncs docs to shipped code |
+| `/docs/*.md` | Engineering working set — must not contradict the Grande Document; TASK 40–41 final sync |
 | Web product repo (`Skaal_midnightchannel`) | Live behavior parity reference |
 
 If conflict arises: **Grande Document wins** until explicitly revised by the Orchestrator.

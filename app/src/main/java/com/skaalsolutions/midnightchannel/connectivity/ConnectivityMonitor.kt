@@ -33,11 +33,13 @@ class ConnectivityMonitor(
     private val _status = MutableStateFlow(probeActiveNetwork())
     val status: StateFlow<ConnectivityStatus> = _status.asStateFlow()
 
-    val isRetryAvailable: Boolean
-        get() = _status.value.isRetryAvailable
-
     @Volatile
     private var started: Boolean = false
+
+    /** Reused across [start]/[stop] cycles — avoid Builder allocation per foreground. */
+    private val networkRequest: NetworkRequest = NetworkRequest.Builder()
+        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        .build()
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
@@ -70,11 +72,8 @@ class ConnectivityMonitor(
         if (started) return
         started = true
         publish(probeActiveNetwork())
-        val request = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build()
         runCatching {
-            connectivityManager.registerNetworkCallback(request, networkCallback, mainHandler)
+            connectivityManager.registerNetworkCallback(networkRequest, networkCallback, mainHandler)
         }.onFailure {
             // Older / restricted devices — fall back to default-network callback.
             runCatching {

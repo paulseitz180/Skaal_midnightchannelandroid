@@ -186,6 +186,13 @@ workflows:
           cd "$CM_BUILD_DIR"
           ./gradlew :app:lintRelease --stacktrace --build-cache
 
+      - name: Unit tests (JVM)
+        script: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          ./gradlew :app:testDebugUnitTest --stacktrace --build-cache
+
       - name: Build debug APK
         script: |
           #!/usr/bin/env bash
@@ -230,5 +237,6 @@ workflows:
       - app/build/outputs/**/*.aab
       - app/build/outputs/**/mapping.txt
       - app/build/reports/lint-results-release.html
+      - app/build/reports/tests/testDebugUnitTest/**
 
 # No `publishing.google_play` — Phase 1 is direct distribution only.

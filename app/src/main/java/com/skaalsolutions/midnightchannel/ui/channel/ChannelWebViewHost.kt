@@ -13,8 +13,7 @@ import com.skaalsolutions.midnightchannel.webview.MidnightWebViewClientCallbacks
 /**
  * Main Channel View WebView container.
  *
- * No extra CRT Box/background layer — the shell host already paints `#0A0A0A`
- * (saves one Compose draw pass under Splash/Offline).
+ * No extra CRT Box/background layer — [MidnightChannelTheme] paints the field once.
  */
 @Composable
 fun ChannelWebViewHost(

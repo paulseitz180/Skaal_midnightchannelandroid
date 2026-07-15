@@ -1,7 +1,7 @@
 # QA STRATEGY — Midnight Channel Android Application
 
 **Source of truth:** Grande Document v1.0 — Sections 10–11, Success Metrics (Document 1), Cursor role boundary (Section 09)  
-**Implementation status:** Shell code complete (TASKS 01–26); device QA and signed Phase 1 artifact remain Orchestrator-owned (TASK 27 docs sync)
+**Implementation status:** Shell code complete (TASKS 01–38); documentation finalized TASK 40; device QA and signed Phase 1 artifact remain Orchestrator-owned
 
 ---
 
@@ -15,7 +15,7 @@ This app is a **WebView shell**. Most product behavior is owned by midnightchann
 | Browser-parity product behavior | Tap-to-unmute, CRT visuals, DJ/playlist selection, geo/weather mood | Orchestrator comparing app vs mobile Chrome |
 | Site regressions | DJ engine / playlist / visual bugs | Midnight Channel **web** assignment — not fixed in this app |
 
-**Cursor does not run the emulator or certify runtime QA.** Cursor confirms the TASK compiles. Orchestrator validates behavior. TASK 25 performed code-path compliance validation and compile gates — not device certification.
+**Cursor does not run the emulator or certify runtime QA.** Cursor confirms compile cleanliness and automated JVM suites. Orchestrator validates on-device behaviour.
 
 ---
 
@@ -43,6 +43,7 @@ This app is a **WebView shell**. Most product behavior is owned by midnightchann
 
 - [x] Kotlin compile (debug + release R8)  
 - [x] Lint as configured in Codemagic  
+- [x] JVM unit tests (`:app:testDebugUnitTest` — 129 tests / 24 suites)  
 - [x] WebSettings table implemented in `MidnightWebSettings`  
 
 ---
@@ -56,13 +57,14 @@ This app is a **WebView shell**. Most product behavior is owned by midnightchann
 | Kotlin compile | Codemagic + local Android Studio |
 | Lint | Codemagic `midnight-channel-ci` / `:app:lintDebug` |
 | Release minify | Codemagic release workflow / `:app:assembleRelease` |
+| JVM unit tests | Codemagic CI + release (`:app:testDebugUnitTest`) |
 | WebSettings constant review | Human review vs `ENGINEERING_SPECIFICATION.md` |
 
 ### 3.2 Unit (JVM)
 
 **Framework:** JUnit 4 + Truth + coroutines-test + Robolectric (for Android types such as `Uri`).  
 **Location:** `app/src/test/java/com/skaalsolutions/midnightchannel/`  
-**CI:** `:app:testDebugUnitTest` on Codemagic `midnight-channel-ci`.
+**CI:** `:app:testDebugUnitTest` on Codemagic `midnight-channel-ci` and release workflow. **129 tests / 24 suites** as of TASK 43.
 
 Target pure logic without a live WebView:
 
@@ -71,7 +73,14 @@ Target pure logic without a live WebView:
 - Shell state transitions (`ShellReducer`: Splash → Ready → Offline → Retrying)
 
 Shared fixtures live under `…/testing/` (`ControllableClock`, `ShellReducerFixtures`, `OriginTestFixtures`, `TestConventions`).  
-**TASK 31** shipped JVM unit suites for reducer/store/controller, origin policy, recovery, connectivity helpers, double-back / back navigator, external Intent validation, and WebView→shell routing. Run `:app:testDebugUnitTest`. Suites do **not** replace Orchestrator device QA.
+**TASK 31** shipped JVM unit suites for reducer/store/controller, origin policy, recovery, connectivity helpers, double-back / back navigator, external Intent validation, and WebView→shell routing. Suites do **not** replace Orchestrator device QA.
+
+### 3.2b Compose UI tests (TASK 32)
+
+**Location:** `app/src/androidTest/.../ui/`  
+**Suites:** `SplashScreenComposeTest`, `OfflineErrorScreenComposeTest`, `MidnightShellComposeTest`  
+**Run:** `./gradlew :app:connectedDebugAndroidTest` (local device/emulator — **not** in Codemagic CI).  
+**Covers:** Native copy, Retry semantics, splash floor timing, shell state overlays.
 
 ### 3.2c WebView validation (TASK 33)
 
@@ -96,6 +105,24 @@ Shared fixtures live under `…/testing/` (`ControllableClock`, `ShellReducerFix
 | Accessibility | High-contrast secondary/disabled colours; Compose semantics | `ShellAccessibilityColorTest`; Splash/Offline Compose |
 
 **Not reasonably automated (manual / Orchestrator):** live Chromium loads; airplane-mode NetworkCallback on device; TalkBack announcements / reduce-motion system setting; Toast + Activity.finish; external app hand-off staying backgrounded; tap-to-unmute / geo / CRT inside the site; process death; signed sideload; orientation feel; system SplashScreen API plate.
+
+### 3.2e Visual fidelity regression (TASK 34)
+
+**Location:** `app/src/test/.../theme/CrtTokenRegressionTest.kt` + Compose UI suites.  
+**CI:** token locks in `:app:testDebugUnitTest`; visual layout on device via §3.2b.  
+**Locks:** CRT palette, motion grammar, phosphor/accent split, radial field stops.
+
+### 3.2f Security validation (TASK 37)
+
+**Location:** JVM suites under `webview/`, `util/`, plus `MidnightWebChromeClientTest`.  
+**CI:** `:app:testDebugUnitTest`.  
+**Covers:** WebSettings hardening, origin allowlists, Intent sanitization, permission denial, Safe Browsing routing, backup disabled.
+
+### 3.2g Performance notes (TASK 38)
+
+**Location:** Production code in `ui/theme/CrtField.kt`, `MidnightShell.kt`, `MidnightWebView.kt`, `ConnectivityMonitor.kt`.  
+**CI:** no dedicated perf suite — behaviour preserved via regression + compile gates.  
+**Optimizations:** single CRT field paint, `drawWithCache`, lifecycle-aware state collection, WebView visibility/scroll tuning.
 
 ### 3.3 Instrumented / Device (Orchestrator)
 
@@ -142,8 +169,8 @@ Developer / Cursor TASK commit
      GitHub
         ↓
 Codemagic (Linux)
-  ├─ midnight-channel-ci: lint + debug APK
-  └─ release workflow: R8 APK + AAB
+  ├─ midnight-channel-ci: lint + unit tests + debug APK
+  └─ release workflow: lint + unit tests + R8 APK + AAB
         (+ signing when CM_KEYSTORE_* configured)
         ↓
 Orchestrator sideload QA (Paul, Marina)
@@ -211,7 +238,7 @@ Release does **not** include:
 
 These remain open from the Grande Document and must not be silently answered in code:
 
-1. ~~Exact terminal-green hex~~ — shipped `#00FF41`; optional Courier New asset still open.  
+1. CRT accent resolved at `#00FF41` / phosphor `#00FF00`; optional Courier New asset still open.  
 2. Final screen orientation / rotation policy (portrait-lock recommended).  
 3. Whether Phase 2 background audio is justified by listener demand.  
 4. Play Store public listing vs internal-only distribution.  
@@ -233,11 +260,16 @@ There are no accounts to reset, no native settings to misconfigure, and no user 
 
 ---
 
-## 10. Validation Already Performed (TASK 25)
+## 10. Automated Validation Summary
 
-Code-path / compile validation covered:
+| Phase | Scope | Status |
+|-------|-------|--------|
+| TASK 25 | Code-path compliance + compile gates | Complete |
+| TASK 31–35 | JVM unit + regression suites (128 tests) | Complete — CI gated |
+| TASK 32 | Compose UI suites | Complete — local device only |
+| TASK 33 | WebView validation | Complete — CI gated |
+| TASK 37 | Security hardening tests | Complete — CI gated |
+| TASK 39 | Specification compliance audit | Complete |
+| TASK 40 | Documentation sync | Complete |
 
-- Cold launch, splash floor ∧ main-frame finish, WebSettings table, Offline/Retry, connectivity bridge, external origin policy, double-back, lifecycle pause/resume, `configChanges`, bg/fg teardown safety  
-- Compliance fixes: HTTPS-only origin, main-frame Intent/SSL gating, idempotent WebView destroy  
-
-**Not certified by TASK 25:** device tap-to-unmute parity, geo/weather UA parity, signed sideload artifact, portrait-lock decision.
+**Not certified by automated suites:** device tap-to-unmute parity, geo/weather UA parity, signed sideload artifact, portrait-lock decision, TalkBack on hardware.

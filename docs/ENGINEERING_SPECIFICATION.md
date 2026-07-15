@@ -2,7 +2,7 @@
 
 **Source of truth:** Grande Document v1.0 — Documents 5–6, Section 08, UX Flow Map  
 **Normative note:** WebView configuration values below are must-implement, not suggestions.  
-**Implementation status:** Matches shipped MVP (`MidnightWebSettings`, Manifest, shell); docs synced TASK 27
+**Implementation status:** Matches shipped MVP (TASKS 01–38); documentation finalized TASK 40
 
 ---
 
@@ -121,7 +121,7 @@ HTTP to the product host is **not** treated as same-origin.
 |--------|----------------|
 | Purpose | Bridge cold start → first WebView main-frame finish; establish CRT tone |
 | Entry | App icon tap |
-| Layout | Full-bleed `#0A0A0A`; centred monospace wordmark `MIDNIGHT CHANNEL`; optional CRT flicker |
+| Layout | Full-bleed CRT field; centred monospace wordmark `MIDNIGHT CHANNEL`; caption `tuning in…`; optional phosphor blink |
 | Hold time | Floor ~400–600ms (default 500ms via `CrtMotion.splashFlickerMs`) |
 | Transition | Cross-fade (200ms) when **both** floor elapsed **and** `MainFrameLoadFinished` |
 | Error | WebView init / network / main-frame fail → Offline (do not hang on Splash) |
@@ -151,6 +151,7 @@ HTTP to the product host is **not** treated as same-origin.
 | Helper | `Check your connection and try again.` |
 | CTA | Plain monospace text link `RETRY` (48dp target, focus ring) |
 | On Retry | Label → `RECONNECTING…` (150ms) then one reload via `ChannelRecoveryController` |
+| Retry timeout | Hung reload returns to Offline after 30s (`RETRY_LOAD_TIMEOUT_MS`) |
 | Retry gate | Enabled only when connectivity is Available; no auto-retry loops |
 | Success | Main Channel Loading → Ready |
 | Failure | Remain on Offline |
@@ -176,7 +177,7 @@ HTTP to the product host is **not** treated as same-origin.
 | Phosphor (marks / glow) | `#00FF00` |
 | Error colour | None separate — stay green-on-black monospace |
 | Typeface | `FontFamily.Monospace` (Compose); window TextAppearance monospace |
-| Base type size | ≥ 16sp on native screens |
+| Base type size | ≥ 16sp on primary native copy (body, headings, CTA); caption tier 14sp (`CrtTextStyles.caption`) |
 | Spacing | 8dp base unit (`CrtSpacing`) |
 | Corner radius | 0 — hard edges |
 | Launcher / splash mark | CRT dial / phosphor ring drawables |
@@ -188,6 +189,7 @@ Motion grammar (`CrtMotion`):
 | Motion | Duration | When |
 |--------|----------|------|
 | Splash boot flicker / floor | 400–600ms (default 500) | Cold start |
+| Splash phosphor blink | 2000ms (independent of floor) | Caption / tap-prompt fidelity |
 | Screen cross-fade | 200ms | Splash↔Channel; Offline overlays |
 | Retry label swap | 150ms | RETRY → RECONNECTING… |
 | Exit confirmation window | 2000ms | Double-back |
@@ -200,7 +202,7 @@ Motion grammar (`CrtMotion`):
 |-------|---------------------------|
 | Background / lock-screen audio | **Out of scope** — `WebView.onPause` on Activity pause |
 | Keep screen awake | **Not** overridden |
-| Connectivity | Monitored while STARTED; Offline at cold unavailable; Retry gated on Available |
+| Connectivity | Monitored while STARTED; requires `NET_CAPABILITY_VALIDATED`; Offline at cold unavailable; Retry gated on Available |
 | Site state | Lives in WebView storage; native does not duplicate |
 | WebView teardown | Compose dispose owns destroy (idempotent) |
 

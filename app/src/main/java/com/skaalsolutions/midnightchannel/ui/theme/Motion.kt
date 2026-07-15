@@ -3,6 +3,9 @@ package com.skaalsolutions.midnightchannel.ui.theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 
+/** Default splash floor — matches Grande Document ~400–600ms default (500ms). */
+const val DEFAULT_SPLASH_FLICKER_MS: Int = 500
+
 /**
  * Motion grammar — Production Bible timings + live-site CRT blink language.
  * Compose is the live source of truth — XML `integers.xml` was removed as a duplicate.
@@ -12,7 +15,7 @@ data class CrtMotion(
     /** Splash floor lower bound (spec ~400–600ms). */
     val splashFlickerMinMs: Int = 400,
     /** Default splash floor before cross-fade may proceed. */
-    val splashFlickerMs: Int = 500,
+    val splashFlickerMs: Int = DEFAULT_SPLASH_FLICKER_MS,
     /**
      * Splash phosphor blink period — matches site `#tap-prompt` `tap-prompt-blink` (2s).
      * Independent of [splashFlickerMs] floor so fidelity does not stretch cold-start gate.
