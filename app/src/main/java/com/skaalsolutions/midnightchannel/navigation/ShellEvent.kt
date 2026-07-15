@@ -3,7 +3,7 @@ package com.skaalsolutions.midnightchannel.navigation
 /**
  * Inputs to the shell state machine.
  *
- * One event vocabulary for splash timing, WebView load, connectivity loss, and Retry.
+ * One event vocabulary for launch timing, WebView load, connectivity loss, and Retry.
  * Connectivity *restoration* is **not** a shell event — [ConnectivityMonitor.status]
  * alone drives Retry enablement (avoids no-op / duplicate transitions).
  *
@@ -11,10 +11,13 @@ package com.skaalsolutions.midnightchannel.navigation
  */
 sealed interface ShellEvent {
 
-    // —— Splash ——
+    // —— Launch ——
 
-    /** Minimum CRT boot floor time has elapsed. */
+    /** Logo Expand floor elapsed → advance to Title Page. */
     data object SplashFloorElapsed : ShellEvent
+
+    /** Title Page 1500ms floor elapsed (may still wait for WebView). */
+    data object TitleFloorElapsed : ShellEvent
 
     /** WebView failed to initialize at the OS level → Offline. */
     data object WebViewInitFailed : ShellEvent
@@ -24,7 +27,7 @@ sealed interface ShellEvent {
     /** Main-frame navigation / reload started → Loading (when on channel). */
     data object MainFrameLoadStarted : ShellEvent
 
-    /** Same-origin main frame finished → Ready (or unlocks Splash paint gate). */
+    /** Same-origin main frame finished → Ready gate (or Title Page paint unlock). */
     data object MainFrameLoadFinished : ShellEvent
 
     /** Main-frame failure → Offline. */

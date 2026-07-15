@@ -77,6 +77,7 @@ class MidnightShellComposeTest : MidnightComposeTest() {
 
         composeRule.runOnIdle {
             shell.dispatch(ShellEvent.SplashFloorElapsed)
+            shell.dispatch(ShellEvent.TitleFloorElapsed)
             shell.dispatch(ShellEvent.MainFrameLoadFinished)
         }
         composeRule.waitForIdle()
@@ -86,6 +87,7 @@ class MidnightShellComposeTest : MidnightComposeTest() {
 
         assertThat(shell.current()).isEqualTo(ShellState.Ready)
         composeRule.onNodeWithTag(ShellUiTestTags.SPLASH_ROOT).assertDoesNotExist()
+        composeRule.onNodeWithTag(ShellUiTestTags.TITLE_ROOT).assertDoesNotExist()
         composeRule.onNodeWithTag(ShellUiTestTags.CHANNEL_HOST).assertExists()
         composeRule.onNodeWithTag(ShellUiTestTags.OFFLINE_ROOT).assertDoesNotExist()
     }

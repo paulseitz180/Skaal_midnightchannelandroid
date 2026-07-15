@@ -72,7 +72,8 @@ com.skaalsolutions.midnightchannel/
 ├── ui/
 │   ├── theme/                      # CRT colors, typography, spacing, shapes, motion, CrtField.kt
 │   ├── shell/                      # MidnightShell + ShellBackHandler
-│   ├── splash/                     # SplashScreen
+│   ├── splash/                     # SplashScreen (Logo Expand)
+│   ├── title/                      # TitlePageScreen (1500ms floor ∧ WebView ready)
 │   ├── channel/                    # ChannelWebViewHost
 │   ├── offline/                    # OfflineErrorScreen
 │   ├── a11y/                       # TalkBack / contrast / reduce-motion helpers

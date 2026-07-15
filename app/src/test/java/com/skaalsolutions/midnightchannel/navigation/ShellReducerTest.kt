@@ -10,28 +10,37 @@ import org.junit.Test
 class ShellReducerTest {
 
     @Test
-    fun initial_state_is_splash_with_gates_unset() {
+    fun initial_state_is_splash_with_paint_unset() {
         val state = ShellReducer.initial() as ShellState.Splash
-        assertThat(state.floorElapsed).isFalse()
         assertThat(state.firstPaintReady).isFalse()
-        assertThat(state.canAdvance).isFalse()
     }
 
     @Test
-    fun splash_advances_only_when_floor_and_main_frame_finish() {
-        val afterFloor = ShellReducer.reduce(
+    fun logo_expand_floor_advances_to_title_page_without_waiting_for_webview() {
+        val title = ShellReducer.reduce(
             ShellState.Splash(),
             ShellEvent.SplashFloorElapsed,
-        ) as ShellState.Splash
+        ) as ShellState.TitlePage
+        assertThat(title.floorElapsed).isFalse()
+        assertThat(title.firstPaintReady).isFalse()
+        assertThat(title.canAdvance).isFalse()
+    }
+
+    @Test
+    fun title_page_advances_only_when_floor_and_main_frame_finish() {
+        val afterFloor = ShellReducer.reduce(
+            ShellState.TitlePage(),
+            ShellEvent.TitleFloorElapsed,
+        ) as ShellState.TitlePage
         assertThat(afterFloor.floorElapsed).isTrue()
-        assertThat(afterFloor).isInstanceOf(ShellState.Splash::class.java)
+        assertThat(afterFloor).isInstanceOf(ShellState.TitlePage::class.java)
 
         val afterPaintOnly = ShellReducer.reduce(
-            ShellState.Splash(),
+            ShellState.TitlePage(),
             ShellEvent.MainFrameLoadFinished,
-        ) as ShellState.Splash
+        ) as ShellState.TitlePage
         assertThat(afterPaintOnly.firstPaintReady).isTrue()
-        assertThat(afterPaintOnly).isInstanceOf(ShellState.Splash::class.java)
+        assertThat(afterPaintOnly).isInstanceOf(ShellState.TitlePage::class.java)
 
         val ready = ShellReducerFixtures.reduceAll(
             ShellReducer.initial(),
@@ -41,13 +50,32 @@ class ShellReducerTest {
     }
 
     @Test
-    fun splash_order_independent_for_floor_and_paint() {
+    fun title_page_order_independent_for_floor_and_paint() {
         val paintThenFloor = ShellReducerFixtures.reduceAll(
-            ShellState.Splash(),
+            ShellState.TitlePage(),
             ShellEvent.MainFrameLoadFinished,
-            ShellEvent.SplashFloorElapsed,
+            ShellEvent.TitleFloorElapsed,
         )
         assertThat(paintThenFloor).isEqualTo(ShellState.Ready)
+    }
+
+    @Test
+    fun paint_during_logo_expand_carries_into_title_page() {
+        val afterPaint = ShellReducer.reduce(
+            ShellState.Splash(),
+            ShellEvent.MainFrameLoadFinished,
+        ) as ShellState.Splash
+        assertThat(afterPaint.firstPaintReady).isTrue()
+
+        val title = ShellReducer.reduce(
+            afterPaint,
+            ShellEvent.SplashFloorElapsed,
+        ) as ShellState.TitlePage
+        assertThat(title.firstPaintReady).isTrue()
+        assertThat(title.floorElapsed).isFalse()
+
+        val ready = ShellReducer.reduce(title, ShellEvent.TitleFloorElapsed)
+        assertThat(ready).isEqualTo(ShellState.Ready)
     }
 
     @Test
@@ -60,6 +88,13 @@ class ShellReducerTest {
         ).isEqualTo(ShellState.Offline)
         assertThat(
             ShellReducer.reduce(ShellState.Splash(), ShellEvent.WebViewInitFailed),
+        ).isEqualTo(ShellState.Offline)
+    }
+
+    @Test
+    fun title_page_network_lost_goes_offline() {
+        assertThat(
+            ShellReducer.reduce(ShellState.TitlePage(), ShellEvent.NetworkLost),
         ).isEqualTo(ShellState.Offline)
     }
 
@@ -109,6 +144,9 @@ class ShellReducerTest {
         ).isEqualTo(ShellState.Offline)
         assertThat(
             ShellReducer.reduce(ShellState.Offline, ShellEvent.SplashFloorElapsed),
+        ).isEqualTo(ShellState.Offline)
+        assertThat(
+            ShellReducer.reduce(ShellState.Offline, ShellEvent.TitleFloorElapsed),
         ).isEqualTo(ShellState.Offline)
     }
 

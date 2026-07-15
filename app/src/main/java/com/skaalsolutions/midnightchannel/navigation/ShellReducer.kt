@@ -9,18 +9,19 @@ package com.skaalsolutions.midnightchannel.navigation
  * - Illegal / irrelevant events leave state unchanged.
  *
  * ```
- * Splash ──(floor ∧ paint)──► Ready
- *    │                           │
- *    │ NetworkLost / fail        │ reload start
- *    ▼                           ▼
- * Offline ◄── fail ────────── Loading ──finish──► Ready
- *    │                              ▲
- *    │ RetryRequested               │
- *    ▼                              │
- * Retrying ──RetryLoadStarted───────┘
- *    │
- *    └── fail ──► Offline
+ * Splash ──SplashFloorElapsed──► TitlePage ──(floor ∧ paint)──► Ready
+ *    │                              │                              │
+ *    │ NetworkLost / fail           │ NetworkLost / fail           │ reload start
+ *    ▼                              ▼                              ▼
+ * Offline ◄── fail ──────────…────────────────────────────── Loading ──finish──► Ready
+ *    │                                                              ▲
+ *    │ RetryRequested                                               │
+ *    ▼                                                              │
+ * Retrying ──RetryLoadStarted───────────────────────────────────────┘
  * ```
+ *
+ * WebView load starts during Logo Expand ([Splash]); Title Page never falls
+ * through to an unready player — [TitlePage.canAdvance] requires both gates.
  */
 object ShellReducer {
 
@@ -29,6 +30,7 @@ object ShellReducer {
     fun reduce(state: ShellState, event: ShellEvent): ShellState =
         when (state) {
             is ShellState.Splash -> reduceSplash(state, event)
+            is ShellState.TitlePage -> reduceTitlePage(state, event)
             ShellState.Loading -> reduceLoading(event)
             ShellState.Ready -> reduceReady(event)
             ShellState.Offline -> reduceOffline(event)
@@ -38,16 +40,17 @@ object ShellReducer {
     private fun reduceSplash(state: ShellState.Splash, event: ShellEvent): ShellState =
         when (event) {
             ShellEvent.SplashFloorElapsed ->
-                advanceSplashIfReady(state.copy(floorElapsed = true))
+                ShellState.TitlePage(firstPaintReady = state.firstPaintReady)
 
             ShellEvent.MainFrameLoadFinished ->
-                advanceSplashIfReady(state.copy(firstPaintReady = true))
+                state.copy(firstPaintReady = true)
 
             ShellEvent.WebViewInitFailed,
             ShellEvent.NetworkLost,
             ShellEvent.MainFrameLoadFailed,
             -> toOffline()
 
+            ShellEvent.TitleFloorElapsed,
             ShellEvent.MainFrameLoadStarted,
             ShellEvent.RetryRequested,
             ShellEvent.RetryLoadStarted,
@@ -55,7 +58,28 @@ object ShellReducer {
             -> state
         }
 
-    private fun advanceSplashIfReady(state: ShellState.Splash): ShellState =
+    private fun reduceTitlePage(state: ShellState.TitlePage, event: ShellEvent): ShellState =
+        when (event) {
+            ShellEvent.TitleFloorElapsed ->
+                advanceTitleIfReady(state.copy(floorElapsed = true))
+
+            ShellEvent.MainFrameLoadFinished ->
+                advanceTitleIfReady(state.copy(firstPaintReady = true))
+
+            ShellEvent.WebViewInitFailed,
+            ShellEvent.NetworkLost,
+            ShellEvent.MainFrameLoadFailed,
+            -> toOffline()
+
+            ShellEvent.SplashFloorElapsed,
+            ShellEvent.MainFrameLoadStarted,
+            ShellEvent.RetryRequested,
+            ShellEvent.RetryLoadStarted,
+            ShellEvent.RetryFailed,
+            -> state
+        }
+
+    private fun advanceTitleIfReady(state: ShellState.TitlePage): ShellState =
         if (state.canAdvance) ShellState.Ready else state
 
     private fun reduceLoading(event: ShellEvent): ShellState =
@@ -72,6 +96,7 @@ object ShellReducer {
             ShellEvent.RetryLoadStarted,
             ShellEvent.RetryRequested,
             ShellEvent.SplashFloorElapsed,
+            ShellEvent.TitleFloorElapsed,
             -> ShellState.Loading
         }
 
@@ -90,6 +115,7 @@ object ShellReducer {
             -> toOffline()
 
             ShellEvent.SplashFloorElapsed,
+            ShellEvent.TitleFloorElapsed,
             ShellEvent.RetryRequested,
             -> ShellState.Ready
         }
@@ -112,10 +138,10 @@ object ShellReducer {
             ShellEvent.WebViewInitFailed,
             -> toOffline()
 
-            // Stay on RECONNECTING… until RetryLoadStarted (ignore nested Retry / early page-start).
             ShellEvent.RetryRequested,
             ShellEvent.MainFrameLoadStarted,
             ShellEvent.SplashFloorElapsed,
+            ShellEvent.TitleFloorElapsed,
             -> ShellState.Retrying
         }
 

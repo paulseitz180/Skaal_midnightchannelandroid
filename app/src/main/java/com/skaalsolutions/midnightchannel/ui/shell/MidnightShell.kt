@@ -30,10 +30,12 @@ import com.skaalsolutions.midnightchannel.navigation.isReconnecting
 import com.skaalsolutions.midnightchannel.navigation.revealsChannelContent
 import com.skaalsolutions.midnightchannel.navigation.showsOfflineSurface
 import com.skaalsolutions.midnightchannel.navigation.showsSplashSurface
+import com.skaalsolutions.midnightchannel.navigation.showsTitleSurface
 import com.skaalsolutions.midnightchannel.ui.channel.ChannelWebViewHost
 import com.skaalsolutions.midnightchannel.ui.offline.OfflineErrorScreen
 import com.skaalsolutions.midnightchannel.ui.splash.SplashScreen
 import com.skaalsolutions.midnightchannel.ui.theme.MidnightTheme
+import com.skaalsolutions.midnightchannel.ui.title.TitlePageScreen
 import com.skaalsolutions.midnightchannel.util.WebViewHistoryBackHandler
 import com.skaalsolutions.midnightchannel.webview.ChannelDestination
 import com.skaalsolutions.midnightchannel.webview.shellRoutingWebViewCallbacks
@@ -41,12 +43,10 @@ import com.skaalsolutions.midnightchannel.webview.shellRoutingWebViewCallbacks
 /**
  * Production shell composition driven exclusively by [ShellController].
  *
- * Performance:
- * - Connectivity Flow collected only while Offline surface is visible
- * - WebView uses View.INVISIBLE under overlays (not Compose alpha)
- * - Stable WebView create / load callbacks via rememberUpdatedState
- * - CRT field painted once by [com.skaalsolutions.midnightchannel.ui.theme.MidnightChannelTheme]
- * - Shell state collected with lifecycle awareness (no work while STOPPED)
+ * Launch sequence:
+ * 1. Logo Expand ([SplashScreen]) — WebView load starts in the background
+ * 2. Title Page ([TitlePageScreen]) — 1500ms floor, extends until WebView ready
+ * 3. Player — cross-fade when floor ∧ main-frame finish (whichever is later)
  */
 @Composable
 fun MidnightShell(
@@ -61,7 +61,8 @@ fun MidnightShell(
     val shellState by shell.state.collectAsStateWithLifecycle()
     val showOffline = shellState.showsOfflineSurface
     val revealChannel = shellState.revealsChannelContent
-    val showSplash = shellState.showsSplashSurface
+    val showLogoExpand = shellState.showsSplashSurface
+    val showTitlePage = shellState.showsTitleSurface
 
     // Collect network status only while Offline/Retrying — skip churn during Ready.
     var connectivity by remember {
@@ -161,14 +162,28 @@ fun MidnightShell(
         )
 
         AnimatedVisibility(
-            visible = showSplash,
+            visible = showLogoExpand,
             enter = fadeInSpec,
             exit = fadeOutSpec,
         ) {
             SplashScreen(
+                minDisplayDurationMs = motion.splashFlickerMs,
                 onMinimumDurationElapsed = {
                     onSplashFloor.value()
                     shellRef.value.dispatch(ShellEvent.SplashFloorElapsed)
+                },
+            )
+        }
+
+        AnimatedVisibility(
+            visible = showTitlePage,
+            enter = fadeInSpec,
+            exit = fadeOutSpec,
+        ) {
+            TitlePageScreen(
+                minDisplayDurationMs = motion.titlePageFloorMs,
+                onMinimumDurationElapsed = {
+                    shellRef.value.dispatch(ShellEvent.TitleFloorElapsed)
                 },
             )
         }

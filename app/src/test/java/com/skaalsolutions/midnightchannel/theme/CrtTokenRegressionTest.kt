@@ -21,6 +21,7 @@ class CrtTokenRegressionTest {
         val motion = CrtMotion()
         assertThat(motion.splashFlickerMinMs).isEqualTo(400)
         assertThat(motion.splashFlickerMs).isEqualTo(500)
+        assertThat(motion.titlePageFloorMs).isEqualTo(1_500)
         assertThat(motion.splashPhosphorBlinkMs).isEqualTo(2_000)
         assertThat(motion.splashPhosphorMinAlpha).isWithin(0.001f).of(0.15f)
         assertThat(motion.screenCrossfadeMs).isEqualTo(200)

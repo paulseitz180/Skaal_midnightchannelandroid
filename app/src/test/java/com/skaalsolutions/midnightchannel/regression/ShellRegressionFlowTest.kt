@@ -154,13 +154,17 @@ class ShellRegressionFlowTest {
     }
 
     @Test
-    fun splash_paint_before_floor_still_waits_then_advances_when_floor_elapses() {
+    fun splash_paint_before_floor_still_waits_then_advances_when_floors_elapse() {
         val shell = ShellController()
         shell.dispatch(ShellEvent.MainFrameLoadFinished)
         assertThat(shell.current().showsSplashSurface).isTrue()
         assertThat(shell.current().revealsChannelContent).isFalse()
 
         shell.dispatch(ShellEvent.SplashFloorElapsed)
+        assertThat(shell.current()).isInstanceOf(ShellState.TitlePage::class.java)
+        assertThat(shell.current().revealsChannelContent).isFalse()
+
+        shell.dispatch(ShellEvent.TitleFloorElapsed)
         assertThat(shell.current()).isEqualTo(ShellState.Ready)
     }
 }

@@ -11,6 +11,7 @@ class ShellControllerTest {
     fun dispatch_drives_store_to_ready() {
         val controller = ShellController()
         controller.dispatch(ShellEvent.SplashFloorElapsed)
+        controller.dispatch(ShellEvent.TitleFloorElapsed)
         controller.dispatch(ShellEvent.MainFrameLoadFinished)
         assertThat(controller.current()).isEqualTo(ShellState.Ready)
     }

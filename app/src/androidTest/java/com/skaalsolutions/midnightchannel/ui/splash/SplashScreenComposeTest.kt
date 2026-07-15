@@ -3,7 +3,6 @@ package com.skaalsolutions.midnightchannel.ui.splash
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.skaalsolutions.midnightchannel.testing.MidnightComposeTest
@@ -15,16 +14,14 @@ import org.junit.runner.RunWith
 class SplashScreenComposeTest : MidnightComposeTest() {
 
     @Test
-    fun splash_shows_wordmark_caption_and_accessibility_description() {
+    fun splash_shows_logo_expand_root_and_accessibility_description() {
         composeRule.setMidnightContent {
             SplashScreen(minDisplayDurationMs = 60_000)
         }
 
         composeRule.onNodeWithTag(ShellUiTestTags.SPLASH_ROOT).assertIsDisplayed()
-        composeRule.onNodeWithText("MIDNIGHT CHANNEL").assertIsDisplayed()
-        composeRule.onNodeWithText("tuning in…").assertIsDisplayed()
         composeRule
-            .onNode(hasContentDescription("Midnight Channel. Tuning in."))
+            .onNode(hasContentDescription("Midnight Channel"))
             .assertExists()
     }
 
@@ -47,15 +44,6 @@ class SplashScreenComposeTest : MidnightComposeTest() {
         composeRule.mainClock.advanceTimeBy(50)
         composeRule.waitForIdle()
         assertThat(elapsed).isTrue()
-    }
-
-    @Test
-    fun splash_can_hide_caption() {
-        composeRule.setMidnightContent {
-            SplashScreen(showCaption = false, minDisplayDurationMs = 60_000)
-        }
-        composeRule.onNodeWithText("MIDNIGHT CHANNEL").assertIsDisplayed()
-        composeRule.onNodeWithText("tuning in…").assertDoesNotExist()
     }
 
     @Test

@@ -53,6 +53,7 @@ class ConnectivityShellBridgeTest {
         val monitor = fakeMonitor(status)
         val shell = ShellController()
         shell.dispatch(ShellEvent.SplashFloorElapsed)
+        shell.dispatch(ShellEvent.TitleFloorElapsed)
         shell.dispatch(ShellEvent.MainFrameLoadFinished)
         assertThat(shell.current()).isEqualTo(ShellState.Ready)
 

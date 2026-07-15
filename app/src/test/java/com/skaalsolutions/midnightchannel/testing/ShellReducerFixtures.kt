@@ -17,9 +17,13 @@ object ShellReducerFixtures {
     ): ShellState =
         events.fold(initial) { state, event -> ShellReducer.reduce(state, event) }
 
-    /** Happy-path sequence that leaves Splash and lands on Ready. */
+    /**
+     * Happy-path launch: Logo Expand floor → Title Page floor → main-frame finish.
+     * Order of Title floor vs paint may vary; SplashFloor must precede TitlePage.
+     */
     fun eventsToReady(): List<ShellEvent> = listOf(
         ShellEvent.SplashFloorElapsed,
+        ShellEvent.TitleFloorElapsed,
         ShellEvent.MainFrameLoadFinished,
     )
 

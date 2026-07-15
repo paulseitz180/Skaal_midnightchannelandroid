@@ -10,6 +10,7 @@ class ShellStateSurfaceTest {
     fun splash_surface_flags() {
         val splash = ShellState.Splash()
         assertThat(splash.showsSplashSurface).isTrue()
+        assertThat(splash.showsTitleSurface).isFalse()
         assertThat(splash.showsOfflineSurface).isFalse()
         assertThat(splash.revealsChannelContent).isFalse()
         assertThat(splash.acceptsRetry).isFalse()
@@ -17,9 +18,20 @@ class ShellStateSurfaceTest {
     }
 
     @Test
+    fun title_page_surface_flags() {
+        val title = ShellState.TitlePage()
+        assertThat(title.showsTitleSurface).isTrue()
+        assertThat(title.showsSplashSurface).isFalse()
+        assertThat(title.showsLaunchOverlay).isTrue()
+        assertThat(title.revealsChannelContent).isFalse()
+        assertThat(title.canAdvance).isFalse()
+    }
+
+    @Test
     fun ready_reveals_channel_and_hides_overlays() {
         assertThat(ShellState.Ready.revealsChannelContent).isTrue()
         assertThat(ShellState.Ready.showsSplashSurface).isFalse()
+        assertThat(ShellState.Ready.showsTitleSurface).isFalse()
         assertThat(ShellState.Ready.showsOfflineSurface).isFalse()
         assertThat(ShellState.Ready.acceptsRetry).isFalse()
     }

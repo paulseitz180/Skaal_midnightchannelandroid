@@ -11,6 +11,7 @@ class ShellStoreTest {
         assertThat(store.current()).isInstanceOf(ShellState.Splash::class.java)
 
         store.dispatch(ShellEvent.SplashFloorElapsed)
+        store.dispatch(ShellEvent.TitleFloorElapsed)
         store.dispatch(ShellEvent.MainFrameLoadFinished)
         assertThat(store.current()).isEqualTo(ShellState.Ready)
     }
@@ -19,6 +20,7 @@ class ShellStoreTest {
     fun dispatch_skips_no_op_transitions() {
         val store = ShellStore()
         store.dispatch(ShellEvent.SplashFloorElapsed)
+        store.dispatch(ShellEvent.TitleFloorElapsed)
         store.dispatch(ShellEvent.MainFrameLoadFinished)
         assertThat(store.current()).isEqualTo(ShellState.Ready)
 
